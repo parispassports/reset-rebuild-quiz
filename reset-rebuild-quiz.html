@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>What's Your Strength Starting Point · Coach Paris</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #ffffff;
+    --surface: #f5f0f8;
+    --surface2: #ede6f2;
+    --purple: #B47BD2;
+    --purple-dim: #6b44cc;
+    --purple-glow: rgba(194, 151, 217, 0.15);
+    --red-accent: #ff4d6d;
+    --text: #7B3FA8;
+    --text-muted: #7B3FA8;
+    --text-dim: #9b6dcc;
+    --border: rgba(194, 151, 217, 0.2);
+    --border-hover: rgba(194, 151, 217, 0.5);
+    --selected: rgba(194, 151, 217, 0.12);
+  }
+
+  html, body {
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    top: -40%;
+    left: -20%;
+    width: 80vw;
+    height: 80vw;
+    background: radial-gradient(ellipse, rgba(194,151,217,0.07) 0%, transparent 65%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    bottom: -30%;
+    right: -20%;
+    width: 60vw;
+    height: 60vw;
+    background: radial-gradient(ellipse, rgba(255,77,109,0.05) 0%, transparent 65%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .quiz-wrapper {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 0 20px 60px;
+  }
+
+  /* HEADER */
+  .quiz-header {
+    width: 100%;
+    max-width: 680px;
+    padding: 32px 0 0;
+    display: flex;
+    justify-content: center;
+  }
+
+  .brand-mark {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--purple);
+    opacity: 0.8;
+  }
+
+  /* PROGRESS */
+  .progress-container {
+    width: 100%;
+    max-width: 680px;
+    margin: 32px 0 0;
+    opacity: 0;
+    animation: fadeUp 0.6s ease 0.2s forwards;
+  }
+
+  .progress-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+
+  .progress-label {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+
+  .progress-count {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 15px;
+    color: var(--purple);
+  }
+
+  .progress-track {
+    width: 100%;
+    height: 2px;
+    background: rgba(155,109,255,0.1);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #9b6dcc, var(--purple));
+    border-radius: 2px;
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 0 8px rgba(194,151,217,0.4);
+  }
+
+  /* CARD */
+  .quiz-card {
+    width: 100%;
+    max-width: 680px;
+    margin-top: 28px;
+    opacity: 0;
+    animation: fadeUp 0.6s ease 0.3s forwards;
+  }
+
+  .screen {
+    display: none;
+  }
+
+  .screen.active {
+    display: block;
+    animation: slideIn 0.45s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* INTRO SCREEN */
+  .intro-eyebrow {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--purple);
+    margin-bottom: 20px;
+  }
+
+  .intro-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(36px, 7vw, 54px);
+    font-weight: 600;
+    line-height: 1.1;
+    color: var(--purple);
+    margin-bottom: 8px;
+  }
+
+  .intro-title em {
+    font-style: italic;
+    color: #B47BD2;
+  }
+
+  .intro-subtitle {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(18px, 3.5vw, 22px);
+    font-weight: 400;
+    font-style: italic;
+    color: var(--text-muted);
+    margin-bottom: 28px;
+    line-height: 1.4;
+  }
+
+  .intro-body {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text-muted);
+    margin-bottom: 36px;
+    max-width: 520px;
+  }
+
+  .intro-body strong {
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  .intro-stats {
+    display: flex;
+    gap: 32px;
+    margin-bottom: 40px;
+    flex-wrap: wrap;
+  }
+
+  .stat {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .stat-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--purple);
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+
+  /* QUESTION */
+  .question-number {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 16px;
+  }
+
+  .question-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(22px, 4.5vw, 32px);
+    font-weight: 700;
+    line-height: 1.25;
+    color: #B47BD2;
+    margin-bottom: 28px;
+  }
+
+  /* OPTIONS */
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 32px;
+  }
+
+  .option {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 18px 20px;
+    background: #1a1020;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .option::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--purple-glow);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+
+  .option:hover {
+    border-color: var(--border-hover);
+    transform: translateX(3px);
+  }
+
+  .option:hover::before {
+    opacity: 1;
+  }
+
+  .option.selected {
+    border-color: var(--purple);
+    background: #ede6f2;
+  }
+
+  .option.selected::before {
+    opacity: 0;
+  }
+
+  .option-letter {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    color: #B47BD2;
+    transition: all 0.2s ease;
+    position: relative;
+    z-index: 1;
+    margin-top: 1px;
+  }
+
+  .option.selected .option-letter {
+    background: var(--purple);
+    border-color: var(--purple);
+    color: white;
+  }
+
+  .option-text {
+    font-size: 14.5px;
+    line-height: 1.5;
+    color: #B47BD2;
+    transition: color 0.2s ease;
+    position: relative;
+    z-index: 1;
+    font-weight: 400;
+    padding-top: 4px;
+  }
+
+  .option.selected .option-text {
+    color: #000000;
+  }
+
+  /* INPUT SCREEN */
+  .input-label {
+    display: block;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 10px;
+  }
+
+  .quiz-input {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 18px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.2s ease;
+    margin-bottom: 20px;
+  }
+
+  .quiz-input::placeholder {
+    color: var(--text-dim);
+  }
+
+  .quiz-input:focus {
+    border-color: var(--purple);
+    box-shadow: 0 0 0 3px rgba(194,151,217,0.15);
+  }
+
+  .input-group {
+    margin-bottom: 8px;
+  }
+
+  /* BUTTONS */
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--purple);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 16px 32px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    letter-spacing: 0.3px;
+  }
+
+  .btn-primary:hover {
+    background: #b085ff;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 24px rgba(194,151,217,0.35);
+  }
+
+  .btn-primary:active {
+    transform: translateY(0);
+  }
+
+  .btn-primary .arrow {
+    transition: transform 0.2s ease;
+  }
+
+  .btn-primary:hover .arrow {
+    transform: translateX(3px);
+  }
+
+  .btn-ghost {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    border-radius: 10px;
+    padding: 14px 24px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-right: 12px;
+  }
+
+  .btn-ghost:hover {
+    border-color: var(--border-hover);
+    color: var(--text);
+  }
+
+  .btn-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  /* RESULT SCREEN */
+  .result-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(155,109,255,0.1);
+    border: 1px solid rgba(155,109,255,0.3);
+    border-radius: 100px;
+    padding: 6px 16px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--purple);
+    margin-bottom: 20px;
+  }
+
+  .result-type {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(30px, 6vw, 46px);
+    font-weight: 700;
+    line-height: 1.1;
+    color: #7B3FA8;
+    margin-bottom: 8px;
+  }
+
+  .result-type em {
+    font-style: italic;
+    color: #7B3FA8;
+  }
+
+  .result-tagline {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 19px;
+    font-style: italic;
+    color: #7B3FA8;
+    margin-bottom: 28px;
+    line-height: 1.4;
+  }
+
+  .result-description {
+    font-size: 15px;
+    line-height: 1.75;
+    color: #7B3FA8;
+    margin-bottom: 32px;
+  }
+
+  .result-description strong {
+    color: #7B3FA8;
+    font-weight: 700;
+  }
+
+  .insight-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 36px;
+  }
+
+  .insight-card {
+    background: #1a1020;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px;
+  }
+
+  .insight-icon {
+    font-size: 20px;
+    margin-bottom: 10px;
+  }
+
+  .insight-title {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--purple);
+    margin-bottom: 6px;
+  }
+
+  .insight-text {
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: #7B3FA8;
+    font-weight: 500;
+  }
+
+  .cta-block {
+    background: linear-gradient(135deg, rgba(155,109,255,0.08), rgba(155,109,255,0.03));
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  .cta-eyebrow {
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--purple);
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+
+  .cta-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 26px;
+    font-weight: 700;
+    color: #7B3FA8;
+    margin-bottom: 8px;
+    line-height: 1.2;
+  }
+
+  .cta-body {
+    font-size: 14px;
+    color: #7B3FA8;
+    line-height: 1.6;
+    margin-bottom: 22px;
+  }
+
+  .price-tag {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 6px;
+    margin-bottom: 20px;
+  }
+
+  .price-current {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--purple);
+  }
+
+  .price-original {
+    font-size: 16px;
+    color: var(--text-dim);
+    text-decoration: line-through;
+  }
+
+  .divider {
+    width: 100%;
+    height: 1px;
+    background: var(--border);
+    margin: 32px 0;
+  }
+
+  /* EMAIL CONFIRM */
+  .email-confirm {
+    background: rgba(155,109,255,0.06);
+    border: 1px solid rgba(155,109,255,0.2);
+    border-radius: 10px;
+    padding: 14px 18px;
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 24px;
+    line-height: 1.5;
+  }
+
+  .email-confirm strong {
+    color: var(--purple);
+  }
+
+  /* FOOTER */
+  .quiz-footer {
+    margin-top: 48px;
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.6;
+  }
+
+  .quiz-footer a {
+    color: var(--purple);
+    text-decoration: none;
+  }
+
+  /* DECORATIVE LINE */
+  .deco-line {
+    width: 40px;
+    height: 2px;
+    background: var(--purple);
+    margin: 24px 0;
+    border-radius: 2px;
+  }
+
+  /* SHIMMER on result reveal */
+  @keyframes shimmer {
+    0% { opacity: 0; transform: translateY(20px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+
+  .result-reveal > * {
+    opacity: 0;
+    animation: shimmer 0.5s ease forwards;
+  }
+
+  .result-reveal > *:nth-child(1) { animation-delay: 0.1s; }
+  .result-reveal > *:nth-child(2) { animation-delay: 0.2s; }
+  .result-reveal > *:nth-child(3) { animation-delay: 0.3s; }
+  .result-reveal > *:nth-child(4) { animation-delay: 0.4s; }
+  .result-reveal > *:nth-child(5) { animation-delay: 0.5s; }
+  .result-reveal > *:nth-child(6) { animation-delay: 0.6s; }
+  .result-reveal > *:nth-child(7) { animation-delay: 0.7s; }
+  .result-reveal > *:nth-child(8) { animation-delay: 0.8s; }
+
+  @media (max-width: 480px) {
+    .insight-grid { grid-template-columns: 1fr; }
+    .intro-stats { gap: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="quiz-wrapper">
+  <header class="quiz-header">
+    <span class="brand-mark">Coach Paris · Reset &amp; Rebuild™</span>
+  </header>
+
+  <div class="progress-container" id="progressContainer" style="display:none;">
+    <div class="progress-meta">
+      <span class="progress-label">Your Progress</span>
+      <span class="progress-count" id="progressCount">1 of 8</span>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill" id="progressFill" style="width:0%"></div>
+    </div>
+  </div>
+
+  <div class="quiz-card">
+
+    <!-- INTRO -->
+    <div class="screen active" id="screen-intro">
+      <p class="intro-eyebrow">Free Strength Assessment</p>
+      <h1 class="intro-title">What's Your<br><em>Strength</em><br>Starting Point?</h1>
+      <p class="intro-subtitle">Find out exactly where your body is — and what it actually needs.</p>
+      <div class="deco-line"></div>
+      <p class="intro-body">
+        Most women think they have a <strong style="color:#7B3FA8;font-weight:600;">discipline problem</strong>. They don't.<br><br>
+        Answer 8 quick questions and discover exactly where your nervous system and fitness capacity are right now — so you can stop following programs built for someone else's body.
+      </p>
+      <div class="intro-stats">
+        <div class="stat">
+          <span class="stat-num">8</span>
+          <span class="stat-label">Questions</span>
+        </div>
+        <div class="stat">
+          <span class="stat-num">&lt;2</span>
+          <span class="stat-label">Minutes</span>
+        </div>
+        <div class="stat">
+          <span class="stat-num">Free</span>
+          <span class="stat-label">Always</span>
+        </div>
+      </div>
+      <button class="btn-primary" onclick="startQuiz()">
+        Find My Starting Point <span class="arrow">→</span>
+      </button>
+    </div>
+
+    <!-- QUESTIONS -->
+    <div class="screen" id="screen-q1">
+      <p class="question-number">Question 01 of 08</p>
+      <h2 class="question-text">How have your workouts been feeling lately?</h2>
+      <div class="options">
+        <button class="option" onclick="selectOption(this, 1, 'A')">
+          <span class="option-letter">A</span>
+          <span class="option-text">Even small workouts feel harder than they should</span>
+        </button>
+        <button class="option" onclick="selectOption(this, 1, 'B')">
+          <span class="option-letter">B</span>
+          <span class="option-text">I can get through them, but I often feel drained before or after</span>
+        </button>
+        <button class="option" onclick="selectOption(this, 1, 'C')">
+          <span class="option-letter">C</span>
+          <span class="option-text">I can be consistent, but my progress feels scattered or unsupported</span>
+        </button>
+        <button class="option" onclick="selectOption(this, 1, 'D')">
+          <span class="option-letter">D</span>
+          <span class="option-text">I feel pretty solid and ready for intentional progression</span>
+        </button>
+      </div>
+      <div class="btn-row">
+        <button class="btn-ghost" onclick="goBack()">← Back</button>
+        <button class="btn-primary" onclick="nextQuestion(1)" id="next-1" disabled>Continue <span class="arrow">→</span></button>
+      </div>
+    </div>
+
+    <div class="screen" id="screen-q2">
+      <p class="question-number">Question 02 of 08</p>
+      <h2 class="question-text">When life gets more stressful, what usually happens to your routine?</h2>
+      <div class="options">
+        <button class="option" onclick="selectOption(this, 2, 'A')">
+          <span class="option-letter">A</span>
+          <span class="option-text">I shut down, skip workouts, or feel too overwhelmed to start</span>
+        </button>
+        <button class="option" onclick="selectOption(this, 2, 'B')">
+          <span class="option-letter">B</span>
+          <span class="option-text">I keep pushing, but I eventually burn out or lose momentum</span>
+        </button>
+        <button class="option" onclick="selectOption(this, 2, 'C')">
+          <span class="option-letter">C</span>
+          <span class="option-text">I still show up somewhat, but I don't have a clear system to lean on</span>
+        </button>
+        <button class="option" onclick="selectOption(this, 2, 'D')">
+          <span class="option-letter">D</span>
+          <span class="option-text">I can usually adjust without completely falling off</span>
+        </button>
+      </div>
+      <div class="btn-row">
+        <button class="btn-ghost" onclick="goBack()">← Back</button>
+        <button class="btn-primary" onclick="nextQuestion(2)" id="next-2" disabled>Continue <span class="arrow">→</span></button>
+      </div>
+    </div>
+
+    <div class="screen" id="screen-q3">
+      <p class="question-number">Question 03 of 08</p>
+      <h2 class="question-text">What best describes your energy right now?</h2>
+      <div class="options">
+        <button class="option" onclick="selectOption(this, 3, 'A')">
+          <span class="option-letter">A</span>
+          <span class="option-text">Low, scattered, or completely tapped out</span>
+        </button>
+        <button class="option" onclick="selectOption(this, 3, 'B')">
+          <span class="option-letter">B</span>
+          <span class="option-text">Up and down — I can function, but I know I'm depleted</span>
+        </button>
+        <button class="option" onclick="selectOption(this, 3, 'C')">
+          <span class="option-letter">C</span>
+          <span class="option-text">Fairly decent, but inconsistent depending on the week</span>
+        </button>
+        <button class="option" onclick="selectOption(this, 3, 'D')">
+          <span class="option-letter">D</span>
+          <span class="option-text">Generally steady and supportive of training</span>
+        </button>
+      </div>
+      <div class="btn-row">
+        <button class="btn-ghost" onclick="goBack()">← Back</button>
+        <button class="btn-primary" onclick="nextQuestion(3)" id="next-3" disabled>Continue <span class="arrow">→</span></button>
+      </div>
+    </div>
+
+    <div class="screen" id="screen-q4">
+      <p class="question-number">Question 04 of 08</p>
+      <h2 class="question-text">Which statement sounds most like you?</h2>
+      <div class="options">
+        <button class="option" onclick="selectOption(this, 4, 'A')">
+          <span class="option-letter">A</span>
+          <span class="option-text">My body feels like it needs relief before it needs more pressure</span>
+        </button>
+        <button class="option" onclick="selectOption(this, 4, 'B')">
+          <span class="option-letter">B</span>
+          <span class="option-text">I'm still functioning, but I know I'm forcing too much</span>
+        </button>
+        <button class="option" onclick="selectOption(this, 4, 'C')">
+          <span class="option-letter">C</span>
+          <span class="option-text">I need more support underneath the effort I'm already making</span>
+        </button>
+        <button class="option" onclick="selectOption(this, 4, 'D')">
+          <span class="option-letter">D</span>
+          <span class="option-text">I'm ready for a smarter challenge and more progression</span>
+        </button>
+      </div>
+      <div class="btn-row">
+        <button class="btn-ghost" onclick="goBack()">← Back</button>
+        <button class="btn-primary" onclick="nextQuestion(4)" id="next-4" disabled>Continue <span class="arrow">→</span></button>
+      </div>
+    </div>
+
+    <div class="screen" id="screen-q5">
+      <p class="question-number">Question 05 of 08</p>
+      <h2 class="question-text">How do you usually feel after training?</h2>
+      <div class="options">
+        <button class="option" onclick="selectOption(this, 5, 'A')">
+          <span class="option-letter">A</span>
+          <span class="option-text">More exhausted than accomplished</span>
+        </button>
+        <button class="option" onclick="selectOption(this, 5, 'B')">
+          <span class="option-letter">B</span>
+          <span class="option-text">Glad I did it, but not always truly recovered</span>
+        </button>
+        <button class="option" onclick="selectOption(this, 5, 'C')">
+          <span class="option-letter">C</span>
+          <span class="option-text">Fine, but unsure whether what I'm doing is actually building anything</span>
+        </button>
+        <button class="option" onclick="selectOption(this, 5, 'D')">
+          <span class="option-letter">D</span>
+          <span class="option-text">Strong, capable, and ready to build over time</span>
+        </button>
+      </div>
+      <div class="btn-row">
+        <button class="btn-ghost" onclick="goBack()">← Back</button>
+        <button class="btn-primary" onclick="nextQuestion(5)" id="next-5" disabled>Continue <span class="arrow">→</span></button>
+      </div>
+    </div>
+
+    <div class="screen" id="screen-q6">
+      <p class="question-number">Question 06 of 08</p>
+      <h2 class="question-text">What keeps you stuck the most?</h2>
+      <div class="options">
+        <button class="option" onclick="selectOption(this, 6, 'A')">
+          <span class="option-letter">A</span>
+          <span class="option-text">I feel too mentally or physically overloaded to stay steady</span>
+        </button>
+        <button class="option" onclick="selectOption(this, 6, 'B')">
+          <span class="option-letter">B</span>
+          <span class="option-text">I keep using effort to compensate for exhaustion</span>
+        </button>
+        <button class="option" onclick="selectOption(this, 6, 'C')">
+          <span class="option-letter">C</span>
+          <span class="option-text">I don't have enough structure underneath my consistency</span>
+        </button>
+        <button class="option" onclick="selectOption(this, 6, 'D')">
+          <span class="option-letter">D</span>
+          <span class="option-text">I need a better plan for progression, not just more motivation</span>
+        </button>
+      </div>
+      <div class="btn-row">
+        <button class="btn-ghost" onclick="goBack()">← Back</button>
+        <button class="btn-primary" onclick="nextQuestion(6)" id="next-6" disabled>Continue <span class="arrow">→</span></button>
+      </div>
+    </div>
+
+    <div class="screen" id="screen-q7">
+      <p class="question-number">Question 07 of 08</p>
+      <h2 class="question-text">How connected do you feel to your body's actual capacity day to day?</h2>
+      <div class="options">
+        <button class="option" onclick="selectOption(this, 7, 'A')">
+          <span class="option-letter">A</span>
+          <span class="option-text">Not very — I often feel overwhelmed or disconnected from what I need</span>
+        </button>
+        <button class="option" onclick="selectOption(this, 7, 'B')">
+          <span class="option-letter">B</span>
+          <span class="option-text">I notice the signs, but I still tend to override them</span>
+        </button>
+        <button class="option" onclick="selectOption(this, 7, 'C')">
+          <span class="option-letter">C</span>
+          <span class="option-text">Somewhat connected — but I don't always know what to do with the information</span>
+        </button>
+        <button class="option" onclick="selectOption(this, 7, 'D')">
+          <span class="option-letter">D</span>
+          <span class="option-text">Pretty connected — I mostly need better strategy and progression</span>
+        </button>
+      </div>
+      <div class="btn-row">
+        <button class="btn-ghost" onclick="goBack()">← Back</button>
+        <button class="btn-primary" onclick="nextQuestion(7)" id="next-7" disabled>Continue <span class="arrow">→</span></button>
+      </div>
+    </div>
+
+    <div class="screen" id="screen-q8">
+      <p class="question-number">Question 08 of 08</p>
+      <h2 class="question-text">What do you need most right now?</h2>
+      <div class="options">
+        <button class="option" onclick="selectOption(this, 8, 'A')">
+          <span class="option-letter">A</span>
+          <span class="option-text">Regulation and relief</span>
+        </button>
+        <button class="option" onclick="selectOption(this, 8, 'B')">
+          <span class="option-letter">B</span>
+          <span class="option-text">Structure that helps me stop running on stress</span>
+        </button>
+        <button class="option" onclick="selectOption(this, 8, 'C')">
+          <span class="option-letter">C</span>
+          <span class="option-text">A stronger base I can actually build on</span>
+        </button>
+        <button class="option" onclick="selectOption(this, 8, 'D')">
+          <span class="option-letter">D</span>
+          <span class="option-text">A clear path to strengthen and progress</span>
+        </button>
+      </div>
+      <div class="btn-row">
+        <button class="btn-ghost" onclick="goBack()">← Back</button>
+        <button class="btn-primary" onclick="nextQuestion(8)" id="next-8" disabled>Almost There <span class="arrow">→</span></button>
+      </div>
+    </div>
+
+    <!-- EMAIL CAPTURE -->
+    <div class="screen" id="screen-email">
+      <p class="question-number">One Last Step</p>
+      <h2 class="question-text">Where should I send your personalized results?</h2>
+      <p style="font-size:14px;color:var(--text-muted);line-height:1.6;margin-bottom:28px;">
+        Your results include your nervous system type, your fitness starting point, and your first actionable steps — completely free.
+      </p>
+      <div class="input-group">
+        <label class="input-label" for="firstName">First Name</label>
+        <input class="quiz-input" type="text" id="firstName" placeholder="Your first name" />
+      </div>
+      <div class="input-group">
+        <label class="input-label" for="email">Email Address</label>
+        <input class="quiz-input" type="email" id="email" placeholder="your@email.com" />
+      </div>
+      <div class="btn-row">
+        <button class="btn-ghost" onclick="goBack()">← Back</button>
+        <button class="btn-primary" onclick="showResult()">Show My Results <span class="arrow">→</span></button>
+      </div>
+      <p style="font-size:11px;color:var(--text-dim);margin-top:16px;line-height:1.6;">
+        No spam. Ever. Unsubscribe anytime. Your results are on their way to your inbox too.
+      </p>
+    </div>
+
+    <!-- RESULTS -->
+    <div class="screen" id="screen-result">
+      <div class="result-reveal" id="resultContent"></div>
+    </div>
+
+  </div>
+
+  <footer class="quiz-footer">
+    <p>© Coach Paris Simone · Reset &amp; Rebuild™ · Stress-Integrated Strength System™</p>
+    <p style="margin-top:6px;">Built for women who are done restarting.</p>
+  </footer>
+</div>
+
+<script>
+  let currentScreen = 'intro';
+  let screenHistory = ['intro'];
+
+  // Tally-matched point values per question per option (A=highest stress, D=lowest stress)
+  const pointMap = {
+    1: { A: 4, B: 3, C: 2, D: 1 },
+    2: { A: 4, B: 3, C: 2, D: 1 },
+    3: { A: 4, B: 3, C: 2, D: 1 },
+    4: { A: 4, B: 3, C: 2, D: 1 },
+    5: { A: 4, B: 3, C: 2, D: 1 },
+    6: { A: 4, B: 3, C: 2, D: 1 },
+    7: { A: 4, B: 3, C: 2, D: 1 },
+    8: { A: 4, B: 3, C: 2, D: 1 }
+  };
+
+  let answers = {}; // { qNum: 'A'|'B'|'C'|'D' }
+
+  // Tally score ranges & result content
+  const results = {
+    overloaded: {
+      range: '27–32',
+      badge: 'Your Result: Overloaded',
+      type: 'You\'re Not Lazy.\n',
+      typeEm: 'You\'re Overloaded.',
+      tagline: 'Your nervous system has been running on red for a while — and your body is finally telling you the truth.',
+      description: `Your score shows a nervous system under serious load. You've likely been pushing through workouts, obligations, and stress — while your body quietly shifts into survival mode. <strong>This isn't a discipline failure.</strong> It's a physiological response. When your system is this activated, more pressure creates more resistance — not more results. The first step isn't harder. It's safer.`,
+      insights: [
+        { icon: '🧠', title: 'Nervous System State', text: 'High load — your body is in full protective mode, resisting additional stress.' },
+        { icon: '💪', title: 'Fitness Capacity', text: 'Depleted right now — not from lack of ability, but from an empty tank.' },
+        { icon: '🎯', title: 'What You Need', text: 'Regulation before intensity. Relief before rebuilding.' },
+        { icon: '⚡', title: 'Your First Step', text: 'Slow down just enough to stabilize. Safety is where your strength begins.' }
+      ],
+      cta: 'Reset & Rebuild was built for exactly where you are right now — starting with regulation, not pressure.'
+    },
+    fumes: {
+      range: '21–26',
+      badge: 'Your Result: Running on Fumes',
+      type: 'You\'re Still Showing Up —\n',
+      typeEm: 'But It\'s Costing You.',
+      tagline: 'You function. You push through. But your body is running a deficit you can\'t keep ignoring.',
+      description: `You're not falling apart — but you're not thriving either. You've been using willpower to compensate for a nervous system that's quietly exhausted. You show up, but the effort feels heavier than it should. <strong>Consistency built on stress has a ceiling.</strong> And you're bumping against it. What you need isn't more motivation — it's a system that works with your capacity instead of demanding more than it has.`,
+      insights: [
+        { icon: '🧠', title: 'Nervous System State', text: 'Chronically activated — functional but running too hot to build effectively.' },
+        { icon: '💪', title: 'Fitness Capacity', text: 'Present but inconsistent — effort varies too much to create real momentum.' },
+        { icon: '🎯', title: 'What You Need', text: 'Structure that reduces the daily decision load and stops the drain.' },
+        { icon: '⚡', title: 'Your First Step', text: 'Replace pressure-based motivation with predictability-based consistency.' }
+      ],
+      cta: 'Reset & Rebuild gives your effort the structure it deserves — so you stop running on empty.'
+    },
+    foundation: {
+      range: '15–20',
+      badge: 'Your Result: Lacking Foundation',
+      type: 'You Show Up —\nNow Build\n',
+      typeEm: 'Something Real.',
+      tagline: 'Your consistency is there. What\'s missing is the system underneath it.',
+      description: `You're doing the work — but without a foundation designed for your nervous system, your progress stays scattered. You have the capacity to build something real. You just need structure that stacks instead of resets. <strong>This is the exact stage where women go from "somewhat consistent" to genuinely strong.</strong> The gap isn't effort. It's intentionality.`,
+      insights: [
+        { icon: '🧠', title: 'Nervous System State', text: 'Moderately regulated — capacity is there, but not yet fully optimized.' },
+        { icon: '💪', title: 'Fitness Capacity', text: 'Solid baseline — your body is ready to respond to consistent structure.' },
+        { icon: '🎯', title: 'What You Need', text: 'A repeatable system with clear progression built in from day one.' },
+        { icon: '⚡', title: 'Your First Step', text: 'Establish your baseline week — then build intentionally from there.' }
+      ],
+      cta: 'Reset & Rebuild gives you the foundation to turn your consistency into real, lasting results.'
+    },
+    ready: {
+      range: '8–14',
+      badge: 'Your Result: Ready to Build',
+      type: 'You\'re Regulated.\nNow It\'s Time\n',
+      typeEm: 'To Build.',
+      tagline: 'Your nervous system is stable. Your energy is steady. You\'re ready for what\'s next.',
+      description: `Your foundation is strong. Your nervous system is regulated enough to handle real progressive training — and your body is primed to respond. <strong>This is where smart programming makes the biggest difference.</strong> You don't need more motivation or another restart. You need a clear, intentional path forward that matches the readiness you've already built.`,
+      insights: [
+        { icon: '🧠', title: 'Nervous System State', text: 'Well regulated — you have real capacity for progressive overload.' },
+        { icon: '💪', title: 'Fitness Capacity', text: 'High — your body is ready to respond to smart, structured training.' },
+        { icon: '🎯', title: 'What You Need', text: 'Strategic progression with nervous system awareness built in.' },
+        { icon: '⚡', title: 'Your First Step', text: 'Lock in your baseline, then build the smarter version of your program.' }
+      ],
+      cta: 'Reset & Rebuild establishes the exact baseline your progression needs to actually stick.'
+    }
+  };
+
+  function getResultKey(score) {
+    if (score >= 27) return 'overloaded';
+    if (score >= 21) return 'fumes';
+    if (score >= 15) return 'foundation';
+    return 'ready';
+  }
+
+  function calculateScore() {
+    let total = 0;
+    for (let q = 1; q <= 8; q++) {
+      if (answers[q]) total += pointMap[q][answers[q]];
+    }
+    return total;
+  }
+
+  function startQuiz() {
+    showScreen('q1');
+    document.getElementById('progressContainer').style.display = 'block';
+    updateProgress(0);
+  }
+
+  function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    const target = document.getElementById('screen-' + id);
+    if (target) {
+      target.classList.add('active');
+      currentScreen = id;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }
+
+  function updateProgress(qNum) {
+    const pct = (qNum / 8) * 100;
+    document.getElementById('progressFill').style.width = pct + '%';
+    if (qNum === 0) {
+      document.getElementById('progressCount').textContent = '1 of 8';
+    } else if (qNum <= 8) {
+      document.getElementById('progressCount').textContent = qNum + ' of 8';
+    }
+  }
+
+  function selectOption(el, qNum, answer) {
+    const options = el.closest('.options').querySelectorAll('.option');
+    options.forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
+    answers[qNum] = answer;
+    const nextBtn = document.getElementById('next-' + qNum);
+    if (nextBtn) nextBtn.disabled = false;
+  }
+
+  function nextQuestion(qNum) {
+    if (!answers[qNum]) return;
+    screenHistory.push('q' + qNum);
+    if (qNum < 8) {
+      showScreen('q' + (qNum + 1));
+      updateProgress(qNum);
+    } else {
+      showScreen('email');
+      updateProgress(8);
+      document.getElementById('progressCount').textContent = 'Almost done';
+    }
+  }
+
+  function goBack() {
+    if (screenHistory.length > 1) {
+      screenHistory.pop();
+      const prev = screenHistory[screenHistory.length - 1];
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById('screen-' + prev).classList.add('active');
+      currentScreen = prev;
+      if (prev === 'intro') {
+        document.getElementById('progressContainer').style.display = 'none';
+      }
+    }
+  }
+
+  function showResult() {
+    const firstName = document.getElementById('firstName').value.trim() || 'You';
+    const email = document.getElementById('email').value.trim();
+    if (!email) {
+      document.getElementById('email').focus();
+      return;
+    }
+
+    const score = calculateScore();
+    const key = getResultKey(score);
+    const r = results[key];
+
+    // Send data to Make webhook
+    fetch('https://hook.us2.make.com/wx7is86sld9i6el4m1c9cr8x1lti3ili', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        first_name: firstName,
+        email: email,
+        score: score,
+        result_type: key,
+        timestamp: new Date().toISOString()
+      })
+    }).catch(err => console.log('Webhook error:', err));
+
+    const insightHTML = `
+      <div class="insight-card">
+        <div class="insight-icon">${r.insights[0].icon}</div>
+        <div class="insight-title">${r.insights[0].title}</div>
+        <div class="insight-text">${r.badge.replace('Your Result: ', '')}</div>
+      </div>
+      <div class="insight-card">
+        <div class="insight-icon">${r.insights[1].icon}</div>
+        <div class="insight-title">${r.insights[1].title}</div>
+        <div class="insight-text">${r.insights[1].text}</div>
+      </div>
+    `;
+
+    document.getElementById('resultContent').innerHTML = `
+      <div class="result-badge">✦ Your Results Are In</div>
+      <h2 class="result-type">${r.type}<em>${r.typeEm}</em></h2>
+      <p class="result-tagline">${r.tagline}</p>
+      <div class="deco-line"></div>
+      <p class="result-description">${r.description}</p>
+      <div class="insight-grid">${insightHTML}</div>
+      <div class="email-confirm">
+        Your full results + companion guide are on their way to <strong>${email}</strong>. Check your inbox in the next few minutes.
+      </div>
+      <div class="cta-block">
+        <p class="cta-eyebrow">Your Recommended Next Step</p>
+        <h3 class="cta-title">Reset &amp; Rebuild™<br>7-Day Strength Reset</h3>
+        <p class="cta-body">${r.cta} Start where you are. Build from there.</p>
+        <div class="price-tag">
+          <span class="price-current">$17</span>
+          <span class="price-original">$37</span>
+        </div>
+        <br>
+        <a href="https://stan.store/Coach_Paris/p/the-7day-strength-reset" target="_blank" class="btn-primary" style="text-decoration:none;display:inline-flex;">
+          Start My Reset &amp; Rebuild <span class="arrow">→</span>
+        </a>
+      </div>
+      <p style="font-size:13px;color:var(--text-dim);text-align:center;line-height:1.6;">
+        Have questions? You can always reply to your results email.<br>
+        <em>— Coach Paris</em>
+      </p>
+    `;
+
+    showScreen('result');
+    document.getElementById('progressContainer').style.display = 'none';
+  }
+</script>
+</body>
+</html>
