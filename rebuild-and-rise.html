@@ -1,0 +1,3561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rebuild & Rise | Coach Paris Simone</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500;600&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #1e1020;
+    --deep: #180d1a;
+    --surface: #2e1a35;
+    --card: #cdc6df;
+    --border: #b8b0d0;
+    --purple: #7c3aed;
+    --purple-light: #9d5cf6;
+    --purple-glow: rgba(124, 58, 237, 0.2);
+    --purple-dim: rgba(124, 58, 237, 0.12);
+    --white: #f5eef8;
+    --card-text: #1e1020;
+    --card-muted: #4a3d5c;
+    --muted: #c4b8d8;
+    --faint: #7a5f85;
+    --page-text: #f5eef8;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--black);
+    color: var(--page-text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── SCREENS ── */
+  .screen { display: none; min-height: 100vh; }
+  .screen.active { display: flex; flex-direction: column; }
+
+  /* ── WELCOME SCREEN ── */
+  #welcome {
+    background: linear-gradient(145deg, #1a0a2e 0%, #2D1B2E 50%, #3a2215 100%);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .welcome-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 70% 60% at 85% 15%, rgba(155, 89, 182, 0.45) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 70% at 10% 85%, rgba(245, 230, 210, 0.35) 0%, transparent 60%),
+      linear-gradient(160deg, #1a0a2e 0%, #2D1B2E 40%, #3d2015 100%);
+    pointer-events: none;
+  }
+
+  .welcome-inner {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 48px 28px;
+    text-align: center;
+    animation: fadeUp 1s ease forwards;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .coach-badge {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--purple-light);
+    margin-bottom: 20px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.2s forwards;
+  }
+
+  .welcome-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(56px, 14vw, 88px);
+    letter-spacing: 0.04em;
+    line-height: 0.92;
+    color: var(--white);
+    margin-bottom: 6px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.4s forwards;
+  }
+
+  .welcome-title span {
+    color: var(--purple-light);
+  }
+
+  .welcome-subtitle {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: clamp(15px, 4vw, 18px);
+    color: var(--muted);
+    margin-bottom: 40px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.6s forwards;
+  }
+
+  /* Audio Player */
+  .audio-player {
+    background: #cdc6df;
+    border: 1px solid #b8b0d0;
+    border-radius: 16px;
+    padding: 24px;
+    width: 100%;
+    max-width: 420px;
+    margin-bottom: 32px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.8s forwards;
+  }
+
+  .audio-label {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--purple);
+    margin-bottom: 14px;
+    font-weight: 600;
+  }
+
+  .audio-controls {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .play-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--purple);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.2s;
+  }
+
+  .play-btn:hover { background: var(--purple-light); transform: scale(1.05); }
+
+  .play-btn svg { width: 18px; height: 18px; fill: white; margin-left: 2px; }
+
+  .audio-bar {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .progress-track {
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    position: relative;
+    cursor: pointer;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--purple-light);
+    border-radius: 2px;
+    width: 0%;
+    transition: width 0.1s;
+  }
+
+  .audio-time {
+    font-size: 11px;
+    color: #4a3d5c;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .audio-note {
+    margin-top: 14px;
+    font-size: 12px;
+    color: #4a3d5c;
+    font-style: italic;
+    line-height: 1.5;
+  }
+
+  /* Welcome message text */
+  .welcome-message {
+    background: #cdc6df;
+    border: 1px solid #b8b0d0;
+    border-left: 3px solid var(--purple);
+    border-radius: 12px;
+    padding: 24px;
+    width: 100%;
+    max-width: 420px;
+    margin-bottom: 32px;
+    text-align: left;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 1s forwards;
+  }
+
+  .welcome-message p {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 15px;
+    line-height: 1.8;
+    color: #1e1020;
+    margin-bottom: 12px;
+  }
+
+  .welcome-message p:last-child { margin-bottom: 0; }
+
+  .begin-btn {
+    background: var(--purple);
+    color: white;
+    border: none;
+    padding: 16px 40px;
+    border-radius: 100px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.25s;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 1.2s forwards;
+  }
+
+  .begin-btn:hover { background: var(--purple-light); transform: translateY(-2px); box-shadow: 0 8px 32px rgba(124,58,237,0.35); }
+
+  /* ── APP SHELL ── */
+  #app { background: var(--black); }
+
+  /* Top nav */
+  .top-nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(45,27,46,0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .nav-brand {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    letter-spacing: 0.06em;
+    color: var(--white);
+  }
+
+  .nav-brand span { color: var(--purple-light); }
+
+  .nav-tabs {
+    display: flex;
+    gap: 4px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 4px;
+  }
+
+  .nav-tab {
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    padding: 7px 14px;
+    border-radius: 100px;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .nav-tab.active {
+    background: var(--purple);
+    color: white;
+  }
+
+  /* ── MAIN CONTENT ── */
+  .content { padding: 24px 20px 100px; max-width: 480px; margin: 0 auto; }
+
+  /* Tab panels */
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* ── DASHBOARD ── */
+  .greeting {
+    margin-bottom: 28px;
+  }
+
+  .greeting-label {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--purple-light);
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  .greeting-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 28px;
+    font-weight: 300;
+    line-height: 1.2;
+    color: var(--white);
+  }
+
+  .greeting-title strong {
+    font-weight: 600;
+    font-style: italic;
+  }
+
+  /* Progress arc */
+  .progress-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 24px;
+    margin-bottom: 24px;
+  }
+
+  .progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+
+  .progress-label {
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--card-muted);
+    font-weight: 500;
+  }
+
+  .progress-pct {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    color: var(--purple-light);
+    letter-spacing: 0.04em;
+  }
+
+  .progress-bar-outer {
+    height: 6px;
+    background: var(--border);
+    border-radius: 3px;
+    margin-bottom: 20px;
+  }
+
+  .progress-bar-inner {
+    height: 100%;
+    background: linear-gradient(90deg, var(--purple), var(--purple-light));
+    border-radius: 3px;
+    transition: width 0.6s ease;
+  }
+
+  /* Week pills */
+  .week-arc {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+
+  .week-pill {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .week-pill.unlocked { border-color: var(--purple); background: var(--purple-dim); }
+  .week-pill.unlocked:hover { background: var(--purple-glow); transform: translateY(-2px); }
+  .week-pill.current { border-color: var(--purple-light); background: var(--purple-glow); }
+  .week-pill.locked { opacity: 0.4; cursor: not-allowed; }
+
+  .week-pill-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 0.05em;
+    color: #f5eef8;
+    line-height: 1;
+    margin-bottom: 2px;
+  }
+
+  .week-pill-name {
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #cdc6df;
+    font-weight: 500;
+  }
+
+  .week-pill.current .week-pill-name { color: var(--purple-light); }
+
+  .lock-icon {
+    font-size: 12px;
+    margin-bottom: 2px;
+    display: block;
+  }
+
+  /* Quick stats */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+
+  .stat-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px 12px;
+    text-align: center;
+  }
+
+  .stat-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px;
+    color: var(--purple);
+    letter-spacing: 0.04em;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .stat-label {
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--card-muted);
+    font-weight: 500;
+  }
+
+  /* Restore code */
+  .restore-card {
+    background: #ffffff;
+    border: 1px solid #e0daea;
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 24px;
+  }
+
+  .restore-title {
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--purple);
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+
+  .restore-desc {
+    font-size: 12px;
+    color: var(--card-muted);
+    margin-bottom: 14px;
+    line-height: 1.5;
+  }
+
+  .restore-code-display {
+    background: rgba(30,16,32,0.12);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 0.15em;
+    color: var(--purple);
+    text-align: center;
+    margin-bottom: 10px;
+  }
+
+  .restore-actions {
+    display: flex;
+    gap: 8px;
+  }
+
+  .btn-sm {
+    flex: 1;
+    padding: 10px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .btn-purple { background: var(--purple); color: white; }
+  .btn-purple:hover { background: var(--purple-light); }
+  .btn-outline { background: transparent; color: var(--muted); border: 1px solid var(--border); }
+  .btn-outline:hover { border-color: var(--purple); color: var(--white); }
+
+  .restore-input-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .restore-input {
+    flex: 1;
+    background: var(--black);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 14px;
+    color: var(--white);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .restore-input:focus { border-color: var(--purple); }
+  .restore-input::placeholder { color: var(--faint); font-size: 14px; letter-spacing: 0.05em; font-family: 'DM Sans', sans-serif; }
+
+  /* ── WEEK VIEW ── */
+  .week-header {
+    margin-bottom: 28px;
+  }
+
+  .week-tag {
+    display: inline-block;
+    background: var(--purple-dim);
+    border: 1px solid var(--purple);
+    border-radius: 100px;
+    padding: 4px 14px;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--purple-light);
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+
+  .week-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 42px;
+    letter-spacing: 0.04em;
+    line-height: 0.95;
+    margin-bottom: 8px;
+    color: var(--white);
+  }
+
+  .week-goal {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  /* Training days */
+  .section-label {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 600;
+    margin-bottom: 14px;
+  }
+
+  .day-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 18px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .day-card:hover { border-color: var(--purple); background: var(--purple-dim); }
+  .day-card.completed { border-color: var(--purple); }
+  .day-card.completed::after {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--purple-light);
+  }
+
+  .day-check {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.2s;
+    font-size: 14px;
+  }
+
+  .day-card.completed .day-check {
+    background: var(--purple);
+    border-color: var(--purple);
+    color: white;
+  }
+
+  .day-info { flex: 1; }
+
+  .day-name {
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--card-text);
+    margin-bottom: 3px;
+  }
+
+  .day-detail {
+    font-size: 12px;
+    color: var(--card-muted);
+  }
+
+  .day-type {
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--purple-light);
+    font-weight: 600;
+    background: var(--purple-dim);
+    padding: 3px 8px;
+    border-radius: 100px;
+    white-space: nowrap;
+  }
+
+  .day-type.recovery { color: #6ee7b7; background: rgba(110,231,183,0.08); }
+
+  /* Journal section */
+  .journal-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 10px;
+  }
+
+  .journal-prompt {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 15px;
+    color: #1e1020;
+    margin-bottom: 12px;
+    line-height: 1.6;
+  }
+
+  .journal-textarea {
+    width: 100%;
+    background: #f5f0ff;
+    border: 1px solid #e0daea;
+    border-radius: 10px;
+    padding: 12px 14px;
+    color: #1e1020;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    line-height: 1.6;
+    resize: none;
+    outline: none;
+    min-height: 80px;
+    transition: border-color 0.2s;
+  }
+
+  .journal-textarea:focus { border-color: var(--purple); }
+  .journal-textarea::placeholder { color: #9a8aaa; }
+
+  .save-note {
+    margin-top: 8px;
+    font-size: 11px;
+    color: var(--faint);
+  }
+
+  /* ── CAPACITY CHECK ── */
+  .capacity-intro {
+    background: #1e1020;
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--purple);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 24px;
+  }
+
+  .capacity-intro p {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 15px;
+    color: #cdc6df;
+    line-height: 1.7;
+  }
+
+  .capacity-question {
+    background: #1e1020;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 12px;
+  }
+
+  .q-label {
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--purple-light);
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  .q-text {
+    font-size: 14px;
+    color: #f5eef8;
+    margin-bottom: 14px;
+    line-height: 1.5;
+  }
+
+  .scale-row {
+    display: flex;
+    gap: 6px;
+  }
+
+  .scale-btn {
+    flex: 1;
+    background: #2e1a35;
+    border: 1px solid #4a3060;
+    border-radius: 8px;
+    padding: 10px 4px;
+    color: #cdc6df;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-align: center;
+  }
+
+  .scale-btn:hover, .scale-btn.selected {
+    background: var(--purple-dim);
+    border-color: var(--purple);
+    color: var(--purple-light);
+  }
+
+  .capacity-result {
+    background: #1e1020;
+    border: 1px solid var(--purple);
+    border-radius: 16px;
+    padding: 24px;
+    margin-top: 16px;
+    text-align: center;
+    display: none;
+  }
+
+  .result-label {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--purple-light);
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  .result-guidance {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 15px;
+    color: #cdc6df;
+    line-height: 1.6;
+    margin-bottom: 16px;
+  }
+
+  .reset-check-btn {
+    background: transparent;
+    border: 1px solid #4a3060;
+    color: #cdc6df;
+    padding: 10px 24px;
+    border-radius: 100px;
+    font-size: 12px;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.2s;
+  }
+
+  .result-level {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 48px;
+    letter-spacing: 0.04em;
+    margin-bottom: 8px;
+  }
+
+  .result-level.high { color: #4ade80; }
+  .result-level.medium { color: #fbbf24; }
+  .result-level.low { color: #ef4444; }
+
+  .result-guidance {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.6;
+    margin-bottom: 16px;
+  }
+
+  .reset-check-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 10px 24px;
+    border-radius: 100px;
+    font-size: 12px;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.2s;
+  }
+
+  .reset-check-btn:hover { border-color: var(--purple); color: var(--white); }
+
+  /* ── DIVIDER ── */
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 24px 0;
+  }
+
+  /* ── LOCKED WEEK ── */
+  .locked-week {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 40px 24px;
+    text-align: center;
+    margin-top: 20px;
+  }
+
+  .lock-big { font-size: 40px; margin-bottom: 16px; }
+
+  .locked-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 0.04em;
+    color: var(--white);
+    margin-bottom: 8px;
+  }
+
+  .locked-desc {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.6;
+    margin-bottom: 20px;
+  }
+
+  .days-remaining {
+    display: inline-block;
+    background: var(--purple-dim);
+    border: 1px solid var(--purple);
+    border-radius: 100px;
+    padding: 8px 20px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    letter-spacing: 0.08em;
+    color: var(--purple-light);
+  }
+
+  /* ── WEEK 4 CTA ── */
+  .mentorship-cta {
+    background: linear-gradient(135deg, rgba(124,58,237,0.2), rgba(124,58,237,0.05));
+    border: 1px solid var(--purple);
+    border-radius: 20px;
+    padding: 28px 24px;
+    text-align: center;
+    margin-top: 24px;
+  }
+
+  .cta-tag {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--purple-light);
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+
+  .cta-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 24px;
+    font-weight: 300;
+    line-height: 1.3;
+    color: var(--white);
+    margin-bottom: 12px;
+  }
+
+  .cta-title em { font-style: italic; color: var(--purple-light); }
+
+  .cta-desc {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.6;
+    margin-bottom: 20px;
+  }
+
+  .cta-btn {
+    background: var(--purple);
+    color: white;
+    border: none;
+    padding: 14px 32px;
+    border-radius: 100px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.25s;
+  }
+
+  .cta-btn:hover { background: var(--purple-light); transform: translateY(-2px); box-shadow: 0 8px 32px rgba(124,58,237,0.4); }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--card);
+    border: 1px solid var(--purple);
+    border-radius: 100px;
+    padding: 12px 24px;
+    font-size: 13px;
+    color: var(--white);
+    z-index: 1000;
+    transition: transform 0.3s ease;
+    white-space: nowrap;
+  }
+
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--black); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  /* ── VIDEO EMBED ── */
+  .video-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--purple-dim);
+    border: 1px solid var(--purple);
+    border-radius: 100px;
+    padding: 6px 14px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--purple-light);
+    cursor: pointer;
+    margin-top: 10px;
+    transition: all 0.2s;
+    font-family: 'DM Sans', sans-serif;
+    border: none;
+  }
+  .video-toggle:hover { background: var(--purple-glow); }
+  .video-embed-wrap { display: none; margin-top: 12px; border-radius: 12px; overflow: hidden; aspect-ratio: 16/9; background: #000; }
+  .video-embed-wrap.open { display: block; }
+  .video-embed-wrap iframe { width: 100%; height: 100%; border: none; }
+
+  /* ── MY GUIDE TAB ── */
+  .guide-week-badge {
+    display: inline-block;
+    background: var(--purple-dim);
+    border: 1px solid var(--purple);
+    border-radius: 100px;
+    padding: 5px 16px;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--purple-light);
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+  .guide-title { font-family: 'Bebas Neue', sans-serif; font-size: 38px; letter-spacing: 0.04em; line-height: 0.95; margin-bottom: 6px; }
+  .guide-subtitle { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 14px; color: var(--muted); margin-bottom: 20px; }
+  .guide-print-btn {
+    width: 100%;
+    background: var(--purple);
+    color: white;
+    border: none;
+    padding: 14px;
+    border-radius: 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .guide-print-btn:hover { background: var(--purple-light); }
+  .guide-section { background: #ffffff; border: 1px solid #e0daea; border-radius: 16px; padding: 20px; margin-bottom: 12px; }
+  .guide-section-title { font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--purple); font-weight: 600; margin-bottom: 14px; }
+  .guide-day-row { display: flex; align-items: flex-start; gap: 12px; padding: 10px 0; border-bottom: 1px solid #e0daea; }
+  .guide-day-row:last-child { border-bottom: none; padding-bottom: 0; }
+  .guide-day-num { font-family: 'Bebas Neue', sans-serif; font-size: 20px; color: var(--purple); line-height: 1; width: 28px; flex-shrink: 0; }
+  .guide-day-info { flex: 1; }
+  .guide-day-name { font-size: 13px; font-weight: 600; color: #1e1020; margin-bottom: 2px; }
+  .guide-day-detail { font-size: 11px; color: #4a3d5c; }
+  .guide-day-status { font-size: 16px; }
+  .guide-journal-prompt { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 14px; color: #4a3d5c; padding: 8px 0; border-bottom: 1px solid #e0daea; line-height: 1.5; }
+  .guide-journal-prompt:last-child { border-bottom: none; padding-bottom: 0; }
+  .guide-offline-note { background: #f5f0ff; border: 1px solid #e0daea; border-radius: 12px; padding: 14px 16px; font-size: 12px; color: #4a3d5c; line-height: 1.5; margin-bottom: 20px; }
+
+  /* ── PRINT STYLES ── */
+  @media print {
+    body * { visibility: hidden; }
+    #print-area, #print-area * { visibility: visible; }
+    #print-area { position: absolute; top: 0; left: 0; width: 100%; font-family: Georgia, serif; color: black; padding: 32px; }
+    #print-area h1 { font-size: 28px; margin-bottom: 4px; }
+    #print-area h2 { font-size: 16px; margin: 20px 0 8px; border-bottom: 2px solid #333; padding-bottom: 4px; }
+    #print-area p, #print-area li { font-size: 12px; line-height: 1.7; margin-bottom: 4px; }
+    #print-area .print-day { margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid #ddd; }
+    #print-area .print-check { display: inline-block; width: 12px; height: 12px; border: 1px solid #333; margin-right: 8px; vertical-align: middle; }
+  }
+  #print-area { display: none; }
+</style>
+</head>
+<body>
+
+<!-- ══════════════ LOGIN SCREEN ══════════════ -->
+<div id="login-screen" style="display:none;position:fixed;inset:0;background:#1e1020;z-index:10000;flex-direction:column;align-items:center;justify-content:center;padding:32px;">
+  <div style="width:100%;max-width:400px;">
+    <div style="text-align:center;margin-bottom:32px;">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:52px;letter-spacing:0.04em;color:#f5eef8;line-height:0.95;">Rebuild<br><span style="color:#9d5cf6;">&</span> Rise</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:14px;color:#cdc6df;margin-top:8px;">A 4-Week Strength Progression for Women Ready for More</div>
+    </div>
+
+    <div style="background:#cdc6df;border-radius:20px;padding:28px;">
+      <div id="auth-title" style="font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:0.04em;color:#1e1020;margin-bottom:20px;">Create Your Account</div>
+
+      <div id="auth-name-row" style="margin-bottom:12px;">
+        <input id="auth-name" type="text" placeholder="Your first name" style="width:100%;background:white;border:1px solid #b8b0d0;border-radius:10px;padding:12px 14px;font-size:14px;color:#1e1020;outline:none;box-sizing:border-box;" />
+      </div>
+      <div style="margin-bottom:12px;">
+        <input id="auth-email" type="email" placeholder="Email address" style="width:100%;background:white;border:1px solid #b8b0d0;border-radius:10px;padding:12px 14px;font-size:14px;color:#1e1020;outline:none;box-sizing:border-box;" />
+      </div>
+      <div style="margin-bottom:16px;">
+        <input id="auth-password" type="password" placeholder="Password (min 6 characters)" style="width:100%;background:white;border:1px solid #b8b0d0;border-radius:10px;padding:12px 14px;font-size:14px;color:#1e1020;outline:none;box-sizing:border-box;" />
+      </div>
+
+      <div id="auth-error" style="font-size:12px;color:#ef4444;margin-bottom:10px;min-height:16px;"></div>
+
+      <button id="auth-btn" onclick="firebaseSignUp()" style="width:100%;background:#7c3aed;color:white;border:none;border-radius:100px;padding:14px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;margin-bottom:14px;">Create Account</button>
+
+      <div id="auth-toggle-text" style="text-align:center;font-size:12px;color:#4a3d5c;">
+        Already have an account? <a href="#" onclick="toggleAuthMode()" style="color:#7c3aed;font-weight:600;">Sign in</a>
+      </div>
+    </div>
+
+    <div style="text-align:center;margin-top:20px;font-size:11px;color:#7a5f85;">
+      Coach Paris Simone | Stress-Integrated Strength System™
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ WELCOME SCREEN ══════════════ -->
+<div id="welcome" class="screen active">
+  <div class="welcome-bg"></div>
+  <div class="welcome-inner">
+    <div class="coach-badge">Coach Paris Simone</div>
+    <div class="welcome-title">Rebuild<br><span>&</span> Rise</div>
+    <div class="welcome-subtitle">A 4-Week Strength Progression for Women Ready for More</div>
+
+    <div class="audio-player">
+      <div class="audio-label">🎙 Welcome Message from Coach Paris</div>
+      <div class="audio-controls">
+        <button class="play-btn" onclick="toggleAudio()" id="playBtn">
+          <svg id="playIcon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+        </button>
+        <div class="audio-bar">
+          <div class="progress-track" onclick="seekAudio(event)">
+            <div class="progress-fill" id="audioProgress"></div>
+          </div>
+          <div class="audio-time">
+            <span id="currentTime">0:00</span>
+            <span id="totalTime">—</span>
+          </div>
+        </div>
+      </div>
+      <div class="audio-note">Tap play to hear a welcome message from Coach Paris.</div>
+      <audio id="welcomeAudio" src="https://www.dropbox.com/scl/fi/1yjgzx20i2ubkxh725ivg/Let-s-build-intro.m4a?rlkey=g4ctn649ugsls580zt3s7zgu6&st=9w6hyrni&raw=1"></audio>
+    </div>
+
+    <div class="welcome-message">
+      <p>Welcome to Rebuild & Rise.</p>
+      <p>I want to start by saying how excited I am to have you here. This program was created for the woman who is ready to move beyond just starting over. You've already begun the process of rebuilding — and now, this is where we rise. With more structure. More strength. More intention. And most importantly, more self-trust.</p>
+      <p>Inside this experience, you are not being asked to force, punish, or override your body. You are being invited to build in a way that is more supportive, more sustainable, and far more powerful over time.</p>
+      <p>So as you move through this program, let this be your reminder: you do not need to chase random workouts or all-or-nothing intensity to make progress. We build through repetition, structure, and the kind of consistency your body can actually trust.</p>
+      <p>Give yourself permission to move with intention. To learn your patterns. To honor the process. And to recognize that strength is not only something you perform — it is something you build.</p>
+      <p>I'm so glad you're here. Let's get started.</p>
+    </div>
+
+    <button class="begin-btn" onclick="enterApp()">I'm Ready — Let's Begin</button>
+  </div>
+</div>
+
+<!-- ══════════════ APP SHELL ══════════════ -->
+<div id="app" class="screen">
+  <nav class="top-nav">
+    <div class="nav-brand">R<span>&</span>R</div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <div id="user-email-display" style="font-size:10px;color:var(--muted);max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></div>
+      <button onclick="firebaseSignOut()" style="background:transparent;border:1px solid var(--border);border-radius:100px;padding:4px 10px;font-size:10px;color:var(--muted);cursor:pointer;font-family:'DM Sans',sans-serif;">Sign Out</button>
+    </div>
+    <div class="nav-tabs">
+      <button class="nav-tab active" onclick="switchTab('dashboard')">Home</button>
+      <button class="nav-tab" onclick="switchTab('guide')">My Toolkit</button>
+      <button class="nav-tab" onclick="switchTab('capacity')">Capacity</button>
+      <button class="nav-tab" onclick="switchTab('program')">Program</button>
+      <button class="nav-tab" onclick="switchTab('progress')">Progress</button>
+    </div>
+  </nav>
+
+  <div class="content">
+
+    <!-- ── DASHBOARD TAB ── -->
+    <div id="tab-dashboard" class="tab-panel active">
+      <!-- COACH BADGE -->
+      <div id="coach-badge" style="display:none;background:#7c3aed;border-radius:14px;padding:16px 20px;margin-bottom:20px;">
+        <div style="font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:#cdc6df;font-weight:600;margin-bottom:12px;">👑 Coach Dashboard</div>
+        <textarea id="coach-announcement-text" placeholder="Post an announcement to all clients..." style="width:100%;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);border-radius:10px;padding:10px;color:white;font-family:'DM Sans',sans-serif;font-size:13px;resize:none;min-height:70px;outline:none;box-sizing:border-box;"></textarea>
+        <button onclick="saveAnnouncement()" style="margin-top:8px;background:white;color:#7c3aed;border:none;border-radius:100px;padding:8px 20px;font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">Post Announcement</button>
+      </div>
+
+      <!-- COACH ANNOUNCEMENT DISPLAY -->
+      <div id="coach-announcement-display" style="display:none;background:var(--card);border:1px solid var(--border);border-left:3px solid var(--purple);border-radius:14px;padding:16px;margin-bottom:20px;">
+        <div style="font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--purple);font-weight:600;margin-bottom:8px;">📢 From Coach Paris</div>
+        <div class="announcement-text" style="font-size:13px;color:var(--card-text);line-height:1.6;"></div>
+      </div>
+
+      <div class="greeting">
+        <div class="greeting-label">Welcome Back</div>
+        <div class="greeting-title" id="greeting-name">You are building<br><strong>something real.</strong></div>
+      </div>
+
+      <div class="progress-card">
+        <div class="progress-header">
+          <div class="progress-label">Overall Progress</div>
+          <div class="progress-pct" id="overallPct">0%</div>
+        </div>
+        <div class="progress-bar-outer">
+          <div class="progress-bar-inner" id="overallBar" style="width:0%"></div>
+        </div>
+        <div class="week-arc">
+          <div class="week-pill current" onclick="openWeek(1)" id="wpill-1">
+            <div class="week-pill-num">01</div>
+            <div class="week-pill-name">Re-Establish</div>
+          </div>
+          <div class="week-pill locked" id="wpill-2">
+            <span class="lock-icon">🔒</span>
+            <div class="week-pill-num">02</div>
+            <div class="week-pill-name">Reinforce</div>
+          </div>
+          <div class="week-pill locked" id="wpill-3">
+            <span class="lock-icon">🔒</span>
+            <div class="week-pill-num">03</div>
+            <div class="week-pill-name">Rise</div>
+          </div>
+          <div class="week-pill locked" id="wpill-4">
+            <span class="lock-icon">🔒</span>
+            <div class="week-pill-num">04</div>
+            <div class="week-pill-name">Strengthen</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-num" id="statDays">0</div>
+          <div class="stat-label">Days In</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" id="statWorkouts">0</div>
+          <div class="stat-label">Workouts</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" id="statStreak">0</div>
+          <div class="stat-label">🔥 Streak</div>
+        </div>
+      </div>
+
+      <!-- QUICK CAPACITY CHECK-IN -->
+      <div class="restore-card" style="margin-bottom:16px;">
+        <div class="restore-title">🟢 Daily Capacity Check-In</div>
+        <div style="font-size:12px;color:var(--card-muted);margin-bottom:14px;">Start here every day. How is your body today?</div>
+        <div id="home-capacity-result" style="display:none;margin-bottom:12px;">
+          <div style="display:flex;align-items:center;gap:10px;background:#f5f0ff;border-radius:10px;padding:12px;">
+            <div id="home-capacity-emoji" style="font-size:24px;"></div>
+            <div>
+              <div id="home-capacity-level" style="font-family:'Bebas Neue';font-size:20px;letter-spacing:0.04em;"></div>
+              <div id="home-capacity-note" style="font-size:11px;color:#4a3d5c;"></div>
+            </div>
+          </div>
+        </div>
+        <div id="home-capacity-buttons" style="display:flex;gap:8px;">
+          <button onclick="quickCapacityCheck('Low')" style="flex:1;padding:12px;border-radius:12px;border:2px solid #ef4444;background:rgba(239,68,68,0.08);color:#ef4444;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">🔴<br><span style="font-size:10px;">Low</span></button>
+          <button onclick="quickCapacityCheck('Moderate')" style="flex:1;padding:12px;border-radius:12px;border:2px solid #fbbf24;background:rgba(251,191,36,0.08);color:#b8860b;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">🟡<br><span style="font-size:10px;">Moderate</span></button>
+          <button onclick="quickCapacityCheck('High')" style="flex:1;padding:12px;border-radius:12px;border:2px solid #4ade80;background:rgba(74,222,128,0.08);color:#16a34a;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">🟢<br><span style="font-size:10px;">High</span></button>
+        </div>
+        <div style="margin-top:10px;text-align:center;">
+          <button onclick="switchTabDirect('capacity')" style="background:transparent;border:none;color:var(--purple);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;text-decoration:underline;">Full capacity check-in →</button>
+        </div>
+      </div>
+
+      <!-- HYDRATION TRACKER -->
+      <div class="restore-card">
+        <div class="restore-title">💧 Hydration Tracker</div>
+        <div style="font-size:12px;color:var(--card-muted);margin-bottom:14px;">Goal: 80–100 oz daily. Tap to log each glass.</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+          <div style="font-family:'Bebas Neue';font-size:48px;letter-spacing:0.04em;color:var(--purple);" id="waterCount">0</div>
+          <div style="font-size:12px;color:var(--card-muted);text-align:right;">oz today<br><span id="waterOz" style="font-size:20px;font-weight:600;color:var(--card-text);">0 oz</span></div>
+        </div>
+        <div style="height:6px;background:#e0daea;border-radius:3px;margin-bottom:14px;">
+          <div id="waterBar" style="height:100%;background:linear-gradient(90deg,#7c3aed,#9d5cf6);border-radius:3px;width:0%;transition:width 0.3s;"></div>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button onclick="logWater(8)" class="btn-sm btn-purple" style="flex:1;">+ 8 oz</button>
+          <button onclick="logWater(16)" class="btn-sm btn-purple" style="flex:1;">+ 16 oz</button>
+          <button onclick="resetWater()" class="btn-sm btn-outline" style="flex:0;padding:10px 14px;">Reset</button>
+        </div>
+      </div>
+
+      <!-- FEATURE-FLAGGED DASHBOARD SECTIONS -->
+      <div id="dashboard-features"></div>
+
+      <!-- PROGRESS SUMMARY CARD -->
+      <div class="restore-card" style="cursor:pointer;" onclick="switchTabDirect('progress')">
+        <div class="restore-title">📏 Body Progress</div>
+        <div id="home-progress-summary" style="font-size:12px;color:var(--card-muted);line-height:1.6;margin-bottom:12px;">Track your measurements, weight, and photo check-ins.</div>
+        <div class="btn-sm btn-purple" style="text-align:center;padding:10px;border-radius:10px;font-size:11px;letter-spacing:0.08em;cursor:pointer;">View Progress Tracker →</div>
+      </div>
+    </div>
+
+    <!-- ── PROGRAM TAB ── -->
+    <div id="tab-program" class="tab-panel">
+      <div id="week-selector">
+        <div class="greeting-label" style="margin-bottom:16px">Your 4-Week Arc</div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div class="day-card" onclick="openWeek(1)" id="wcard-1">
+            <div class="day-check" style="width:40px;height:40px;font-family:'Bebas Neue';font-size:20px;color:var(--purple-light);border-color:var(--purple)">01</div>
+            <div class="day-info">
+              <div class="day-name">Week 1 — Re-Establish</div>
+              <div class="day-detail">3 training days + 1 mobility/recovery day</div>
+            </div>
+            <div class="day-type">Active</div>
+          </div>
+          <div class="day-card locked" id="wcard-2" style="opacity:0.4;cursor:not-allowed">
+            <div class="day-check" style="width:40px;height:40px;font-size:18px">🔒</div>
+            <div class="day-info">
+              <div class="day-name">Week 2 — Reinforce</div>
+              <div class="day-detail">4 training days + 1 recovery day</div>
+            </div>
+            <div class="day-type">Locked</div>
+          </div>
+          <div class="day-card locked" id="wcard-3" style="opacity:0.4;cursor:not-allowed">
+            <div class="day-check" style="width:40px;height:40px;font-size:18px">🔒</div>
+            <div class="day-info">
+              <div class="day-name">Week 3 — Rise</div>
+              <div class="day-detail">4 stronger training days + 1 recovery/support day</div>
+            </div>
+            <div class="day-type">Locked</div>
+          </div>
+          <div class="day-card locked" id="wcard-4" style="opacity:0.4;cursor:not-allowed">
+            <div class="day-check" style="width:40px;height:40px;font-size:18px">🔒</div>
+            <div class="day-info">
+              <div class="day-name">Week 4 — Strengthen</div>
+              <div class="day-detail">Full 5-day split + end-of-program reflection</div>
+            </div>
+            <div class="day-type">Locked</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- WEEK DETAIL VIEWS -->
+      <div id="week-detail" style="display:none">
+        <button onclick="backToWeeks()" style="background:none;border:none;color:var(--muted);font-size:13px;cursor:pointer;margin-bottom:20px;display:flex;align-items:center;gap:6px;font-family:'DM Sans',sans-serif;">← Back to Program</button>
+        <div id="week-detail-content"></div>
+      </div>
+    </div>
+
+    <!-- ── CAPACITY TAB ── -->
+    <div id="tab-capacity" class="tab-panel">
+      <div class="greeting-label" style="margin-bottom:6px">Capacity Check</div>
+      <div style="font-family:'Bebas Neue';font-size:36px;letter-spacing:0.04em;margin-bottom:20px;">How Are You <span style="color:var(--purple-light)">Today?</span></div>
+
+      <div class="capacity-intro">
+        <p>Before you train, check in. Your capacity determines your training — not the other way around. Answer honestly. There are no wrong answers here.</p>
+      </div>
+
+      <div class="capacity-question">
+        <div class="q-label">Energy</div>
+        <div class="q-text">How is your overall energy level right now?</div>
+        <div class="scale-row" id="q1">
+          <button class="scale-btn" onclick="selectScale('q1',1)">1</button>
+          <button class="scale-btn" onclick="selectScale('q1',2)">2</button>
+          <button class="scale-btn" onclick="selectScale('q1',3)">3</button>
+          <button class="scale-btn" onclick="selectScale('q1',4)">4</button>
+          <button class="scale-btn" onclick="selectScale('q1',5)">5</button>
+        </div>
+      </div>
+
+      <div class="capacity-question">
+        <div class="q-label">Sleep</div>
+        <div class="q-text">How well did you sleep last night?</div>
+        <div class="scale-row" id="q2">
+          <button class="scale-btn" onclick="selectScale('q2',1)">1</button>
+          <button class="scale-btn" onclick="selectScale('q2',2)">2</button>
+          <button class="scale-btn" onclick="selectScale('q2',3)">3</button>
+          <button class="scale-btn" onclick="selectScale('q2',4)">4</button>
+          <button class="scale-btn" onclick="selectScale('q2',5)">5</button>
+        </div>
+      </div>
+
+      <div class="capacity-question">
+        <div class="q-label">Stress</div>
+        <div class="q-text">How is your stress level today? (1 = very high stress, 5 = very calm)</div>
+        <div class="scale-row" id="q3">
+          <button class="scale-btn" onclick="selectScale('q3',1)">1</button>
+          <button class="scale-btn" onclick="selectScale('q3',2)">2</button>
+          <button class="scale-btn" onclick="selectScale('q3',3)">3</button>
+          <button class="scale-btn" onclick="selectScale('q3',4)">4</button>
+          <button class="scale-btn" onclick="selectScale('q3',5)">5</button>
+        </div>
+      </div>
+
+      <div class="capacity-question">
+        <div class="q-label">Body Readiness</div>
+        <div class="q-text">How does your body feel physically — joints, muscles, soreness?</div>
+        <div class="scale-row" id="q4">
+          <button class="scale-btn" onclick="selectScale('q4',1)">1</button>
+          <button class="scale-btn" onclick="selectScale('q4',2)">2</button>
+          <button class="scale-btn" onclick="selectScale('q4',3)">3</button>
+          <button class="scale-btn" onclick="selectScale('q4',4)">4</button>
+          <button class="scale-btn" onclick="selectScale('q4',5)">5</button>
+        </div>
+      </div>
+
+      <div class="capacity-question">
+        <div class="q-label">Motivation</div>
+        <div class="q-text">How motivated do you feel to train right now?</div>
+        <div class="scale-row" id="q5">
+          <button class="scale-btn" onclick="selectScale('q5',1)">1</button>
+          <button class="scale-btn" onclick="selectScale('q5',2)">2</button>
+          <button class="scale-btn" onclick="selectScale('q5',3)">3</button>
+          <button class="scale-btn" onclick="selectScale('q5',4)">4</button>
+          <button class="scale-btn" onclick="selectScale('q5',5)">5</button>
+        </div>
+      </div>
+
+      <button class="begin-btn" style="width:100%;margin-top:16px;opacity:1;animation:none;" onclick="calculateCapacity()">Check My Capacity</button>
+
+      <div class="capacity-result" id="capacityResult">
+        <div class="result-label">Your Capacity Today</div>
+        <div class="result-level" id="resultLevel">—</div>
+        <div class="result-guidance" id="resultGuidance"></div>
+        <button class="reset-check-btn" onclick="resetCapacity()">Check Again</button>
+      </div>
+    </div>
+
+    <!-- ── NUTRITION TAB ── -->
+    <div id="tab-nutrition" class="tab-panel">
+      <div class="greeting-label" style="margin-bottom:6px">Nutrition</div>
+      <div style="font-family:'Bebas Neue';font-size:36px;letter-spacing:0.04em;line-height:1;margin-bottom:6px;">Structured Eating<br><span style="color:var(--purple-light)">Without Extremes</span></div>
+      <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:14px;color:var(--muted);margin-bottom:24px;line-height:1.5;">Carb needs change day to day. Higher activity days require more fuel. Rest days feel better with fewer carbs. Listen to your body and adjust as needed.</div>
+
+      <!-- Protein Anchor Rule -->
+      <div class="guide-section" style="border-left:3px solid var(--purple);margin-bottom:12px;">
+        <div class="guide-section-title">The Protein Anchor Rule</div>
+        <div style="font-size:13px;color:var(--white);font-weight:600;margin-bottom:8px;">Every meal contains a protein source. It is your non-negotiable.</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.8;">Eggs • Greek yogurt • Chicken • Turkey • Beef • Fish • Tofu / Tempeh • Protein shake</div>
+        <div style="margin-top:10px;font-size:12px;color:var(--muted);font-family:'Cormorant Garamond',serif;font-style:italic;line-height:1.6;">Protein stabilizes blood sugar, supports recovery, and improves satiety.</div>
+      </div>
+
+      <!-- Intensity-Based Carb Regulation -->
+      <div class="guide-section" style="margin-bottom:12px;">
+        <div class="guide-section-title">Intensity-Based Carb Regulation</div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:14px;font-style:italic;font-family:'Cormorant Garamond',serif;">We do not eliminate carbohydrates. We regulate them.</div>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;align-items:flex-start;gap:10px;">
+            <span style="font-size:14px;flex-shrink:0;">🟢</span>
+            <div><div style="font-size:12px;font-weight:600;color:var(--white);margin-bottom:2px;">High-Intensity / Lower Body Days</div><div style="font-size:11px;color:var(--muted);">Include a carb source pre- or post-training → rice, potatoes, fruit, oats</div></div>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:10px;">
+            <span style="font-size:14px;flex-shrink:0;">🟡</span>
+            <div><div style="font-size:12px;font-weight:600;color:var(--white);margin-bottom:2px;">Moderate Training Days</div><div style="font-size:11px;color:var(--muted);">Balanced plate → protein + carb + fat + vegetables</div></div>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:10px;">
+            <span style="font-size:14px;flex-shrink:0;">🔴</span>
+            <div><div style="font-size:12px;font-weight:600;color:var(--white);margin-bottom:2px;">Restore / Low-Intensity Days</div><div style="font-size:11px;color:var(--muted);">Protein + vegetables + moderate carbs → keep meals steady, not excessive</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Three Carb Day Profiles -->
+      <div style="font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:12px;">Your Three Carb Days</div>
+
+      <!-- Low Carb -->
+      <div class="guide-section" style="border-left:3px solid #ef4444;margin-bottom:10px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+          <span style="font-size:18px;">🔴</span>
+          <div>
+            <div style="font-family:'Bebas Neue';font-size:22px;letter-spacing:0.04em;color:#ef4444;">Low Carb Day</div>
+            <div style="font-size:11px;color:var(--muted);">1–2 servings • 70–120g complex carbohydrates</div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:7px;">
+          <div style="font-size:12px;color:var(--white);"><span style="color:var(--muted);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;">Breakfast</span><br>Egg scramble with spinach & peppers (avocado slices)</div>
+          <div style="font-size:12px;color:var(--white);"><span style="color:var(--muted);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;">Snack</span><br>Pinwheel turkey & provolone with lettuce</div>
+          <div style="font-size:12px;color:var(--white);"><span style="color:var(--muted);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;">Lunch</span><br>Large mixed greens salad w/ grilled chicken, salmon, or shrimp (balsamic dressing)</div>
+          <div style="font-size:12px;color:var(--white);"><span style="color:var(--muted);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;">Snack</span><br>Greek yogurt & mixed berries</div>
+          <div style="font-size:12px;color:var(--white);"><span style="color:var(--muted);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;">Dinner</span><br>Grilled or blackened protein (fish, turkey, chicken, lean beef) + non-starchy veggies (broccoli, zucchini)</div>
+          <div style="font-size:12px;color:var(--white);"><span style="color:var(--muted);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;">Snack</span><br>Whey shake (low carb)</div>
+        </div>
+      </div>
+
+      <!-- Moderate Carb -->
+      <div class="guide-section" style="border-left:3px solid #fbbf24;margin-bottom:10px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+          <span style="font-size:18px;">🟡</span>
+          <div>
+            <div style="font-family:'Bebas Neue';font-size:22px;letter-spacing:0.04em;color:#fbbf24;">Moderate Carb Day</div>
+            <div style="font-size:11px;color:var(--muted);">~130–200g carbohydrates • 0.8–1.0g protein per lb bodyweight</div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:7px;">
+          <div style="font-size:12px;color:var(--white);"><span style="color:var(--muted);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;">Breakfast</span><br>Eggs with whole grain toast + apple or banana</div>
+          <div style="font-size:12px;color:var(--white);"><span style="color:var(--muted);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;">Snack</span><br>Protein bar</div>
+          <div style="font-size:12px;color:var(--white);"><span style="color:var(--muted);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;">Lunch</span><br>Brown rice or quinoa bowl, grilled chicken/fish/turkey, roasted vegetables</div>
+          <div style="font-size:12px;color:var(--white);"><span style="color:var(--muted);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;">Dinner</span><br>Lean protein (lean beef, fish, chicken) + rice or sweet potato & steamed veggies</div>
+          <div style="font-size:12px;color:var(--white);"><span style="color:var(--muted);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;">Snack</span><br>Protein low carb shake</div>
+        </div>
+      </div>
+
+      <!-- High Carb -->
+      <div class="guide-section" style="border-left:3px solid #4ade80;margin-bottom:10px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+          <span style="font-size:18px;">🟢</span>
+          <div>
+            <div style="font-family:'Bebas Neue';font-size:22px;letter-spacing:0.04em;color:#4ade80;">High Carb Day</div>
+            <div style="font-size:11px;color:var(--muted);">220–300g carbohydrates</div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:7px;">
+          <div style="font-size:12px;color:var(--white);"><span style="color:var(--muted);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;">Breakfast</span><br>Oatmeal with nuts + berries & 2 sausage links or bacon</div>
+          <div style="font-size:12px;color:var(--white);"><span style="color:var(--muted);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;">Snack</span><br>Pear and berry crumble</div>
+          <div style="font-size:12px;color:var(--white);"><span style="color:var(--muted);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;">Lunch</span><br>Egg boil or onion boil</div>
+          <div style="font-size:12px;color:var(--white);"><span style="color:var(--muted);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;">Snack</span><br>Protein smoothie</div>
+          <div style="font-size:12px;color:var(--white);"><span style="color:var(--muted);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;">Dinner</span><br>Spaghetti or leftovers</div>
+        </div>
+      </div>
+
+      <!-- 7-Day Example Week -->
+      <div style="font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:20px 0 12px;">7-Day Example Week</div>
+      <div class="guide-section" style="margin-bottom:10px;">
+        <div style="display:flex;flex-direction:column;gap:0;">
+          ${[
+            { day: 'Monday', training: 'Lower Body', capacity: 'High', color: '#4ade80', emoji: '🟢', carb: 'High Carb' },
+            { day: 'Tuesday', training: 'Upper Body Push', capacity: 'High', color: '#4ade80', emoji: '🟢', carb: 'High Carb' },
+            { day: 'Wednesday', training: 'Rest', capacity: 'Low', color: '#ef4444', emoji: '🔴', carb: 'Low Carb' },
+            { day: 'Thursday', training: 'Full Body', capacity: 'Moderate', color: '#fbbf24', emoji: '🟡', carb: 'Moderate Carb' },
+            { day: 'Friday', training: 'Mobility & Recovery', capacity: 'Moderate', color: '#fbbf24', emoji: '🟡', carb: 'Moderate Carb' },
+            { day: 'Saturday', training: 'Rest', capacity: 'Low', color: '#ef4444', emoji: '🔴', carb: 'Low Carb' },
+            { day: 'Sunday', training: 'Rest', capacity: 'Low', color: '#ef4444', emoji: '🔴', carb: 'Low Carb' },
+          ].map((d, i) => `
+            <div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);${i===6?'border-bottom:none;':'' }">
+              <div style="width:34px;font-family:'Bebas Neue';font-size:11px;letter-spacing:0.08em;color:var(--muted);text-transform:uppercase;flex-shrink:0;">${d.day.slice(0,3)}</div>
+              <div style="flex:1;">
+                <div style="font-size:13px;font-weight:600;color:var(--white);">${d.training}</div>
+                <div style="font-size:11px;color:var(--muted);">${d.carb} Day</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:4px;background:var(--surface);border:1px solid var(--border);border-radius:100px;padding:4px 10px;">
+                <span style="font-size:11px;">${d.emoji}</span>
+                <span style="font-size:10px;font-weight:600;color:${d.color};letter-spacing:0.05em;">${d.capacity}</span>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+
+      <!-- Hydration -->
+      <div class="guide-section" style="border-left:3px solid var(--purple);margin-bottom:24px;">
+        <div class="guide-section-title">Hydration Standard</div>
+        <div style="font-family:'Bebas Neue';font-size:28px;letter-spacing:0.04em;color:var(--purple-light);margin-bottom:6px;">80–100 oz Water Daily</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.6;">Add electrolytes if training intensely or sweating heavily.<br><em style="font-family:'Cormorant Garamond',serif;font-size:13px;">Dehydration mimics fatigue. Do not mistake it for lack of motivation.</em></div>
+      </div>
+    </div>
+
+    <!-- ── MY TOOLKIT TAB ── -->
+    <div id="tab-guide" class="tab-panel">
+      <div id="guide-content"></div>
+    </div>
+
+    <!-- ── PROGRESS TAB ── -->
+    <div id="tab-progress" class="tab-panel">
+      <div id="progress-content"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- REST TIMER OVERLAY -->
+<div id="rest-timer-overlay" style="display:none;position:fixed;inset:0;background:rgba(30,16,32,0.97);z-index:9999;flex-direction:column;align-items:center;justify-content:center;text-align:center;">
+  <div style="font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:#cdc6df;margin-bottom:12px;">Rest Timer</div>
+  <div id="rest-timer-display" style="font-family:'Bebas Neue';font-size:96px;letter-spacing:0.04em;color:#f5eef8;line-height:1;">0:30</div>
+  <div style="font-size:13px;color:#cdc6df;margin-bottom:32px;">Take a breath. Your next set is coming.</div>
+  <div style="display:flex;gap:12px;">
+    <button onclick="pauseTimer()" id="pauseBtn" style="background:#7c3aed;color:white;border:none;border-radius:100px;padding:14px 28px;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">Pause</button>
+    <button onclick="stopTimer()" style="background:transparent;color:#cdc6df;border:1px solid #4a3060;border-radius:100px;padding:14px 28px;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">Skip</button>
+  </div>
+  <div style="margin-top:24px;display:flex;gap:10px;">
+    <button onclick="setTimer(30)" style="background:var(--surface,#2e1a35);color:#cdc6df;border:1px solid #4a3060;border-radius:100px;padding:8px 16px;font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">30s</button>
+    <button onclick="setTimer(45)" style="background:var(--surface,#2e1a35);color:#cdc6df;border:1px solid #4a3060;border-radius:100px;padding:8px 16px;font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">45s</button>
+    <button onclick="setTimer(60)" style="background:var(--surface,#2e1a35);color:#cdc6df;border:1px solid #4a3060;border-radius:100px;padding:8px 16px;font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">60s</button>
+    <button onclick="setTimer(90)" style="background:var(--surface,#2e1a35);color:#cdc6df;border:1px solid #4a3060;border-radius:100px;padding:8px 16px;font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">90s</button>
+  </div>
+</div>
+
+<!-- PRINT AREA -->
+<div id="print-area"></div>
+<div class="toast" id="toast"></div>
+
+<!-- Firebase SDK -->
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+import { getFirestore, doc, setDoc, getDoc, updateDoc, serverTimestamp, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCpF4ykT6BCmfNXTR-o5fsdwMqmsLO5VDA",
+  authDomain: "rebuild-and-rise.firebaseapp.com",
+  projectId: "rebuild-and-rise",
+  storageBucket: "rebuild-and-rise.firebasestorage.app",
+  messagingSenderId: "87951065832",
+  appId: "1:87951065832:web:840c590cfa0580600b3f5d"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+// COACH EMAIL
+const COACH_EMAIL = 'parispassports@gmail.com';
+
+// ── AUTH STATE LISTENER ──
+// ── SESSION TOKEN ──
+// Generate a unique token for this browser session
+const SESSION_TOKEN = Math.random().toString(36).slice(2) + Date.now().toString(36);
+
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    window.currentUser = user;
+    window.isCoach = user.email === COACH_EMAIL;
+
+    // ── SINGLE SESSION ENFORCEMENT ──
+    // Write this session token to Firebase
+    const sessionRef = doc(db, 'sessions', user.uid);
+    await setDoc(sessionRef, {
+      token: SESSION_TOKEN,
+      loginAt: serverTimestamp(),
+      email: user.email
+    });
+
+    // Listen for session changes — if another device logs in, kick this one out
+    const unsubscribeSession = onSnapshot(sessionRef, (snap) => {
+      if (snap.exists() && snap.data().token !== SESSION_TOKEN) {
+        // Another session took over — sign this one out
+        unsubscribeSession();
+        signOut(auth);
+        showSessionKickedOverlay();
+      }
+    });
+
+    window.unsubscribeSession = unsubscribeSession;
+
+    // Load user data from Firestore
+    const userDoc = await getDoc(doc(db, 'users', user.uid));
+    if (userDoc.exists()) {
+      const cloudState = userDoc.data().state;
+      if (cloudState) {
+        // Merge cloud state with local
+        const localSaved = localStorage.getItem('rnr-state');
+        const localState = localSaved ? JSON.parse(localSaved) : {};
+        // Cloud takes priority for completion data
+        window.state = { ...localState, ...cloudState };
+        localStorage.setItem('rnr-state', JSON.stringify(window.state));
+      }
+    } else {
+      // First time — create user doc
+      const localSaved = localStorage.getItem('rnr-state');
+      const localState = localSaved ? JSON.parse(localSaved) : {};
+      await setDoc(doc(db, 'users', user.uid), {
+        email: user.email,
+        createdAt: serverTimestamp(),
+        state: localState
+      });
+    }
+
+    // Hide login, show app
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('welcome').classList.add('active');
+    document.getElementById('user-email-display').textContent = user.email;
+
+    // Show coach badge if coach
+    if (window.isCoach) {
+      document.getElementById('coach-badge').style.display = 'flex';
+    }
+
+  } else {
+    window.currentUser = null;
+    window.isCoach = false;
+    // Show login screen
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById('login-screen').style.display = 'flex';
+  }
+});
+
+// ── SAVE TO FIRESTORE ──
+window.saveToCloud = async function() {
+  if (!window.currentUser) return;
+  try {
+    await updateDoc(doc(db, 'users', window.currentUser.uid), {
+      state: window.state,
+      lastUpdated: serverTimestamp()
+    });
+  } catch(e) {
+    console.log('Cloud save error:', e);
+  }
+};
+
+// ── AUTH FUNCTIONS ──
+window.firebaseSignUp = async function() {
+  const email = document.getElementById('auth-email').value.trim();
+  const password = document.getElementById('auth-password').value;
+  const name = document.getElementById('auth-name').value.trim();
+  const errorEl = document.getElementById('auth-error');
+
+  if (!email || !password || !name) {
+    errorEl.textContent = 'Please fill in all fields.';
+    return;
+  }
+  if (password.length < 6) {
+    errorEl.textContent = 'Password must be at least 6 characters.';
+    return;
+  }
+
+  try {
+    document.getElementById('auth-btn').textContent = 'Creating account...';
+    await createUserWithEmailAndPassword(auth, email, password);
+    // Store name in state
+    window.state.clientName = name;
+    errorEl.textContent = '';
+  } catch(e) {
+    console.error('Signup error:', e);
+    const msg = e.code || e.message || 'Unknown error';
+    if (msg.includes('email-already-in-use')) errorEl.textContent = 'This email already has an account. Please sign in.';
+    else if (msg.includes('invalid-email')) errorEl.textContent = 'Please enter a valid email address.';
+    else if (msg.includes('weak-password')) errorEl.textContent = 'Password must be at least 6 characters.';
+    else if (msg.includes('network')) errorEl.textContent = 'Network error. Please check your connection.';
+    else errorEl.textContent = 'Error: ' + msg;
+    document.getElementById('auth-btn').textContent = 'Create Account';
+  }
+};
+
+window.firebaseSignIn = async function() {
+  const email = document.getElementById('auth-email').value.trim();
+  const password = document.getElementById('auth-password').value;
+  const errorEl = document.getElementById('auth-error');
+
+  if (!email || !password) {
+    errorEl.textContent = 'Please enter your email and password.';
+    return;
+  }
+
+  try {
+    document.getElementById('auth-btn').textContent = 'Signing in...';
+    await signInWithEmailAndPassword(auth, email, password);
+    errorEl.textContent = '';
+  } catch(e) {
+    console.error('Signin error:', e);
+    const msg = e.code || e.message || 'Unknown error';
+    if (msg.includes('user-not-found') || msg.includes('wrong-password') || msg.includes('invalid-credential')) {
+      errorEl.textContent = 'Invalid email or password. Please try again.';
+    } else if (msg.includes('network')) {
+      errorEl.textContent = 'Network error. Please check your connection.';
+    } else {
+      errorEl.textContent = 'Error: ' + msg;
+    }
+    document.getElementById('auth-btn').textContent = 'Sign In';
+  }
+};
+
+window.firebaseSignOut = async function() {
+  // Stop listening to session changes
+  if (window.unsubscribeSession) window.unsubscribeSession();
+  await signOut(auth);
+  showToast('Signed out successfully.');
+};
+
+function showSessionKickedOverlay() {
+  // Remove any existing overlays
+  const existing = document.getElementById('session-kicked-overlay');
+  if (existing) existing.remove();
+
+  const overlay = document.createElement('div');
+  overlay.id = 'session-kicked-overlay';
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(30,16,32,0.98);z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;text-align:center;';
+  overlay.innerHTML = `
+    <div style="font-size:40px;margin-bottom:16px;">⚠️</div>
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:0.04em;color:#f5eef8;margin-bottom:12px;">Session Ended</div>
+    <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:15px;color:#cdc6df;margin-bottom:24px;line-height:1.6;max-width:300px;">Your account was signed in on another device. For security, this session has been ended.</div>
+    <div style="background:#cdc6df;border-radius:16px;padding:16px 20px;margin-bottom:20px;max-width:320px;">
+      <div style="font-size:12px;color:#1e1020;line-height:1.6;">If this wasn't you, please change your password immediately. Each purchase is for one user on one device.</div>
+    </div>
+    <button onclick="location.reload()" style="background:#7c3aed;color:white;border:none;border-radius:100px;padding:14px 32px;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">Sign Back In</button>
+  `;
+  document.body.appendChild(overlay);
+}
+
+window.toggleAuthMode = function() {
+  const isSignUp = document.getElementById('auth-name-row').style.display !== 'none';
+  document.getElementById('auth-name-row').style.display = isSignUp ? 'none' : 'block';
+  document.getElementById('auth-btn').textContent = isSignUp ? 'Sign In' : 'Create Account';
+  document.getElementById('auth-btn').onclick = isSignUp ? window.firebaseSignIn : window.firebaseSignUp;
+  document.getElementById('auth-toggle-text').innerHTML = isSignUp
+    ? 'Don\'t have an account? <a href="#" onclick="toggleAuthMode()" style="color:var(--purple-light);">Create one</a>'
+    : 'Already have an account? <a href="#" onclick="toggleAuthMode()" style="color:var(--purple-light);">Sign in</a>';
+  document.getElementById('auth-title').textContent = isSignUp ? 'Welcome Back' : 'Create Your Account';
+  document.getElementById('auth-error').textContent = '';
+};
+
+// ── COACH ANNOUNCEMENTS ──
+window.saveAnnouncement = async function() {
+  const text = document.getElementById('coach-announcement-text').value.trim();
+  if (!text) return;
+  try {
+    await setDoc(doc(db, 'announcements', 'latest'), {
+      text,
+      postedAt: serverTimestamp(),
+      postedBy: window.currentUser.email
+    });
+    showToast('Announcement posted ✓');
+    document.getElementById('coach-announcement-text').value = '';
+    loadAnnouncement();
+  } catch(e) {
+    showToast('Error posting announcement');
+  }
+};
+
+window.loadAnnouncement = async function() {
+  try {
+    const snap = await getDoc(doc(db, 'announcements', 'latest'));
+    if (snap.exists()) {
+      const data = snap.data();
+      const el = document.getElementById('coach-announcement-display');
+      if (el) {
+        el.style.display = 'block';
+        el.querySelector('.announcement-text').textContent = data.text;
+      }
+    }
+  } catch(e) {}
+};
+
+// Load announcement on start
+setTimeout(window.loadAnnouncement, 2000);
+
+</script>
+
+<script>
+// ══════════════ FEATURE FLAGS ══════════════
+// Flip any flag from false to true to unlock that feature
+// Upload to GitHub after changing — goes live in 60 seconds
+const FEATURES = {
+  pushNotifications: true,        // LIVE — automated accountability reminders
+  testimonialPrompt: false,       // V2 — auto-collect social proof at Week 4
+  capacityTrendChart: false,      // V2 — visual nervous system pattern graph
+  coachDashboard: false,          // V2 — see all client data as coach
+  strengthLog: false,             // V2 — track weights used each session
+  mealLog: false,                 // V2 — daily Low/Moderate/High meal confirmation
+  shoppingListCustomizer: false,  // V2 — check off what you have, print what you need
+  consultationScheduler: false,   // V2 — one-tap booking into your calendar
+  milestoneBadges: false,         // V2 — earned badges for completing weeks and PRs
+  communityBoard: false,          // V2 — unlock at 8 purchases
+};
+
+// ══════════════ STATE ══════════════
+let state = {
+  startDate: null,
+  completedWorkouts: {},
+  journalEntries: {},
+  currentWeekView: null
+};
+
+const WEEK_DATA = {
+  1: {
+    name: "Re-Establish",
+    goal: "Learn the split, build rhythm, lock in form. Ease in — feel capable, not crushed.",
+    days: [
+      { id: "1-1", name: "Day 1 — Lower Body", detail: "RDL Pattern focus • Form + rhythm", type: "Training", videoUrl: "#",
+        exercises: [
+          { name: "Romanian Deadlift (RDL)", sets: "2-3", reps: "10-12", rest: "30s", url: "https://youtu.be/bRp3-ghancw" },
+          { name: "Calf Raises", sets: "2-3", reps: "12-15", rest: "30s", url: "https://youtu.be/l-wJAQ1eL90" },
+          { name: "Leg Curls", sets: "2-3", reps: "10-12", rest: "30s", url: "https://youtu.be/nUbuZEvS9cw" },
+          { name: "Step-Back (Reverse) Lunge", sets: "2-3", reps: "8-10", rest: "30s", url: "https://youtu.be/SmBYcfAw_AQ" },
+          { name: "Windmill", sets: "2-3", reps: "10-12", rest: "30s", url: "https://youtu.be/8JTdPBuPEZ0" }
+        ]
+      },
+      { id: "1-2", name: "Day 2 — Upper Body Push", detail: "Press pattern focus • Build confidence", type: "Training", videoUrl: "#", exercises: [
+          { name: "Wall Push-ups", sets: "2-3", reps: "8-10", rest: "30s", url: "https://youtu.be/NZEUhtTBWx8" },
+          { name: "Tricep Kickbacks", sets: "2-3", reps: "10-12", rest: "30s", url: "https://youtu.be/xorUBYQWS_c" },
+          { name: "Lying Chest Press", sets: "2-3", reps: "10-12", rest: "30s", url: "https://youtu.be/xLtERNd9ECA" },
+          { name: "Lying Chest Fly", sets: "2-3", reps: "10-12", rest: "30s", url: "https://youtu.be/kzmTfuN9dHw" },
+          { name: "Kneeling/Standing Tricep Extension", sets: "2-3", reps: "10-12", rest: "30s", url: "https://youtu.be/Tg2Ib-IcYs4" }
+        ]
+      },
+      { id: "1-3", name: "Day 3 — Rest", detail: "Complete rest • Let your body recover and rebuild", type: "Recovery", videoUrl: "#", exercises: [] },
+      { id: "1-4", name: "Day 4 — Mobility & Recovery", detail: "Nervous system reset • Active rest", type: "Recovery", videoUrl: "#", exercises: [
+          { name: "Guided Mobility Session", sets: "2-3", reps: "Full circuit", rest: "1 min", url: "https://youtu.be/ImH1apjBv3Y" }
+        ]
+      },
+      { id: "1-5", name: "Day 5 — Full Body", detail: "Compound movements • Full integration", type: "Training", videoUrl: "#", exercises: [
+          { name: "Step-ups", sets: "2-3", reps: "8-10", rest: "30s", url: "https://youtu.be/dcJDWNqA8lE" },
+          { name: "DB Hammer Curl", sets: "2-3", reps: "8-10", rest: "30s", url: "https://youtu.be/1yxunTmnDDM" },
+          { name: "Tempo Squat", sets: "2-3", reps: "8-10", rest: "30s", url: "https://youtu.be/P7p8AS4SjIU" },
+          { name: "Bridge", sets: "2-3", reps: "10-12", rest: "30s", url: "https://youtu.be/R2YauNBKxgQ" },
+          { name: "Dead Bug", sets: "2-3", reps: "8", rest: "30s", url: "https://youtu.be/KWp7f0ElR5I" }
+        ]
+      },
+      { id: "1-6", name: "Day 6 — Rest", detail: "Complete rest • Honor your output this week", type: "Recovery", videoUrl: "#", exercises: [] },
+      { id: "1-7", name: "Day 7 — Rest", detail: "Complete rest • Prepare for the week ahead", type: "Recovery", videoUrl: "#", exercises: [] }
+    ],
+    journal: [
+      "How did your body feel moving through these patterns this week?",
+      "What felt unfamiliar — and what felt like coming home?",
+      "What is one thing you want to build on next week?"
+    ]
+  },
+  2: {
+    name: "Reinforce",
+    goal: "Same patterns, increased demand. Prove your consistency and reinforce the skill.",
+    days: [
+      { id: "2-1", name: "Day 1 — Lower Body", detail: "Added set on key lifts • More intention", type: "Training", videoUrl: "#", exercises: [] },
+      { id: "2-2", name: "Day 2 — Upper Body Push", detail: "Slight rep increase • Tempo work", type: "Training", videoUrl: "#", exercises: [] },
+      { id: "2-3", name: "Day 3 — Upper Body Pull", detail: "Pull pattern introduced • Balanced loading", type: "Training", videoUrl: "#", exercises: [] },
+      { id: "2-4", name: "Day 4 — Lower Body + Core", detail: "Compound lower + stability", type: "Training", videoUrl: "#", exercises: [] },
+      { id: "2-5", name: "Day 5 — Recovery", detail: "Shorter rest periods • Active recovery", type: "Recovery", videoUrl: "#", exercises: [] }
+    ],
+    journal: [
+      "Where did you notice yourself getting stronger — physically or mentally?",
+      "Did you honor your capacity this week? What did that look like?",
+      "What are you most proud of from Week 2?"
+    ]
+  },
+  3: {
+    name: "Rise",
+    goal: "Transition from participation into progression. Ownership starts here.",
+    days: [
+      { id: "3-1", name: "Day 1 — Lower Body Heavy", detail: "Heavier loads • Stronger performance targets", type: "Training", videoUrl: "#", exercises: [] },
+      { id: "3-2", name: "Day 2 — Upper Body Push Heavy", detail: "More total sets • Greater challenge", type: "Training", videoUrl: "#", exercises: [] },
+      { id: "3-3", name: "Day 3 — Upper Body Pull Heavy", detail: "Progressive overload applied", type: "Training", videoUrl: "#", exercises: [] },
+      { id: "3-4", name: "Day 4 — Full Body Power", detail: "Compound movements with load", type: "Training", videoUrl: "#", exercises: [] },
+      { id: "3-5", name: "Day 5 — Recovery + Support", detail: "Nervous system support • Intentional rest", type: "Recovery", videoUrl: "#", exercises: [] }
+    ],
+    journal: [
+      "Describe a moment this week where you felt genuinely strong.",
+      "How has your relationship with training shifted since Week 1?",
+      "What does progression feel like in your body — not just on paper?"
+    ]
+  },
+  4: {
+    name: "Strengthen",
+    goal: "Leave powerful, capable, and clear. This is not burnout week — this is consolidation.",
+    days: [
+      { id: "4-1", name: "Day 1 — Lower Body (Best Version)", detail: "Strongest execution of the split", type: "Training", videoUrl: "#", exercises: [] },
+      { id: "4-2", name: "Day 2 — Upper Body Push (Best Version)", detail: "Your best effort — measured", type: "Training", videoUrl: "#", exercises: [] },
+      { id: "4-3", name: "Day 3 — Upper Body Pull (Best Version)", detail: "Repeat main lifts, better execution", type: "Training", videoUrl: "#", exercises: [] },
+      { id: "4-4", name: "Day 4 — Full Body Power", detail: "Measurable wins — track everything", type: "Training", videoUrl: "#", exercises: [] },
+      { id: "4-5", name: "Day 5 — Graduation Workout", detail: "Your choice • Capacity based • Celebrate", type: "Training", videoUrl: "#", exercises: [] }
+    ],
+    journal: [
+      "Who are you now compared to the woman who started Week 1?",
+      "What does your strength look like beyond this program?",
+      "What do you know about yourself now that you didn't before?"
+    ],
+    showCTA: true
+  }
+};
+
+// Capacity answers
+let capacityAnswers = {};
+
+// ══════════════ INIT ══════════════
+function init() {
+  loadState();
+  generateCode();
+  updateDashboard();
+  checkUnlocks();
+  updateHomeProgressSummary();
+  updateStreak();
+  initHydration();
+  initHomeCapacity();
+  if (FEATURES.pushNotifications) {
+    initPushNotifications();
+    scheduleDailyReminders();
+    checkSpecialNotifications();
+  }
+  // Personalize greeting
+  if (state.clientName) {
+    const el = document.getElementById('greeting-name');
+    if (el) el.innerHTML = `${state.clientName}, you are building<br><strong>something real.</strong>`;
+  }
+}
+
+function loadState() {
+  const saved = localStorage.getItem('rnr-state');
+  if (saved) {
+    try { state = JSON.parse(saved); } catch(e) {}
+  }
+  if (!state.startDate) {
+    state.startDate = Date.now();
+    saveState();
+  }
+}
+
+function saveState() {
+  localStorage.setItem('rnr-state', JSON.stringify(state));
+  // Also save to cloud if logged in
+  if (window.saveToCloud) window.saveToCloud();
+}
+
+// ══════════════ RESTORE CODE ══════════════
+function generateCode() {
+  // Encode state as a short alphanumeric code
+  const days = Math.floor((Date.now() - state.startDate) / 86400000);
+  const workoutCount = Object.keys(state.completedWorkouts).filter(k => state.completedWorkouts[k]).length;
+  const seed = (days * 100 + workoutCount + 42).toString(36).toUpperCase();
+  const code = ('00000000' + seed).slice(-8);
+  document.getElementById('restoreCodeDisplay').textContent = code;
+}
+
+function copyCode() {
+  const code = document.getElementById('restoreCodeDisplay').textContent;
+  navigator.clipboard.writeText(code).then(() => showToast('Code copied to clipboard ✓'));
+}
+
+function showRestoreInput() {
+  const row = document.getElementById('restoreInputRow');
+  row.style.display = row.style.display === 'none' ? 'flex' : 'none';
+}
+
+function restoreProgress() {
+  showToast('Progress restored ✓');
+  document.getElementById('restoreInputRow').style.display = 'none';
+}
+
+// ══════════════ WEEK UNLOCKING ══════════════
+function getDaysSinceStart() {
+  return Math.floor((Date.now() - state.startDate) / 86400000);
+}
+
+function isWeekUnlocked(week) {
+  if (week === 1) return true;
+  return getDaysSinceStart() >= (week - 1) * 7;
+}
+
+function checkUnlocks() {
+  for (let w = 1; w <= 4; w++) {
+    const unlocked = isWeekUnlocked(w);
+    const pill = document.getElementById(`wpill-${w}`);
+    const card = document.getElementById(`wcard-${w}`);
+
+    if (unlocked) {
+      if (pill) { pill.classList.remove('locked'); pill.classList.add(w === getCurrentWeek() ? 'current' : 'unlocked'); }
+      if (card) {
+        card.classList.remove('locked');
+        card.style.opacity = '1';
+        card.style.cursor = 'pointer';
+        card.querySelector('.day-type').textContent = w === getCurrentWeek() ? 'Active' : 'Unlocked';
+        card.querySelector('.day-check').textContent = w.toString().padStart(2,'0');
+        card.querySelector('.day-check').style.color = 'var(--purple-light)';
+        card.querySelector('.day-check').style.borderColor = 'var(--purple)';
+        card.querySelector('.day-check').style.fontFamily = "'Bebas Neue'";
+        card.querySelector('.day-check').style.fontSize = '20px';
+        card.onclick = () => openWeek(w);
+      }
+    }
+  }
+}
+
+function getCurrentWeek() {
+  const days = getDaysSinceStart();
+  return Math.min(4, Math.floor(days / 7) + 1);
+}
+
+// ══════════════ DASHBOARD ══════════════
+function updateDashboard() {
+  const total = 15;
+  const completed = Object.values(state.completedWorkouts).filter(Boolean).length;
+  const pct = Math.round((completed / total) * 100);
+  const days = getDaysSinceStart();
+
+  document.getElementById('overallPct').textContent = pct + '%';
+  document.getElementById('overallBar').style.width = pct + '%';
+  document.getElementById('statDays').textContent = days;
+  document.getElementById('statWorkouts').textContent = completed;
+  document.getElementById('statStreak').textContent = state.streak || 1;
+
+  // Render feature-flagged dashboard sections
+  const featuresEl = document.getElementById('dashboard-features');
+  if (featuresEl) {
+    featuresEl.innerHTML =
+      renderCapacityTrendChart() +
+      renderMealLog() +
+      (FEATURES.communityBoard ? renderCommunityBoard() : '');
+  }
+
+  // Check milestones and testimonial
+  if (FEATURES.milestoneBadges) checkMilestones();
+  if (FEATURES.testimonialPrompt) checkTestimonialPrompt();
+}
+
+// ══════════════ NAVIGATION ══════════════
+function enterApp() {
+  document.getElementById('welcome').classList.remove('active');
+  document.getElementById('app').classList.add('active');
+  init();
+}
+
+function switchTab(tab) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  event.target.classList.add('active');
+
+  if (tab === 'program') {
+    document.getElementById('week-selector').style.display = 'block';
+    document.getElementById('week-detail').style.display = 'none';
+  }
+  if (tab === 'guide') renderGuide();
+  if (tab === 'progress') renderProgress();
+}
+
+function switchTabDirect(tab) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  document.querySelectorAll('.nav-tab')[4].classList.add('active');
+  if (tab === 'progress') renderProgress();
+}
+
+// ══════════════ WEEK DETAIL ══════════════
+function openWeek(week) {
+  if (!isWeekUnlocked(week)) return;
+  state.currentWeekView = week;
+  const data = WEEK_DATA[week];
+
+  // Switch to program tab
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-program').classList.add('active');
+  document.querySelectorAll('.nav-tab')[1].classList.add('active');
+
+  document.getElementById('week-selector').style.display = 'none';
+  document.getElementById('week-detail').style.display = 'block';
+
+  let html = `
+    <div class="week-header">
+      <div class="week-tag">Week ${week} of 4</div>
+      <div class="week-title">0${week} — ${data.name}</div>
+      <div class="week-goal">${data.goal}</div>
+    </div>
+    <div class="section-label">Training Days</div>
+  `;
+
+  data.days.forEach((day, dayIndex) => {
+    const done = state.completedWorkouts[day.id];
+    const isRecovery = day.type === 'Recovery';
+    const hasExercises = day.exercises && day.exercises.length > 0;
+    const hasVideo = day.videoUrl && day.videoUrl !== '#';
+    const unlocked = isDayUnlocked(week, dayIndex);
+    const timeRemaining = !unlocked ? getTimeRemaining(week, dayIndex) : null;
+    const lockedStyle = !unlocked ? 'opacity:0.4;cursor:not-allowed;pointer-events:none;' : '';
+    html += `
+      <div class="day-card ${done ? 'completed' : ''}" id="card-${day.id}" style="${lockedStyle}" ${unlocked ? `onclick="toggleDay('${day.id}', event)"` : ''}>
+        <div class="day-check">${done ? '✓' : !unlocked ? '🔒' : ''}</div>
+        <div class="day-info">
+          <div class="day-name">${day.name}</div>
+          <div class="day-detail">${day.detail}${timeRemaining ? `<br><span style="color:var(--purple-light);font-size:10px;font-weight:600;">Unlocks in ${timeRemaining}</span>` : ''}</div>
+          ${unlocked ? `
+            ${hasExercises ? `
+            <div style="margin-top:10px;display:flex;flex-direction:column;gap:8px;">
+              ${day.exercises.map(ex => `
+                <div style="background:rgba(124,58,237,0.08);border:1px solid rgba(124,58,237,0.25);border-radius:12px;padding:10px 12px;">
+                  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+                    <span style="font-size:12px;font-weight:600;color:var(--white);">${ex.name}</span>
+                    <a href="${ex.url}" target="_blank" onclick="event.stopPropagation()" style="display:inline-flex;align-items:center;gap:4px;background:var(--purple);border-radius:100px;padding:3px 10px;font-size:10px;font-weight:600;color:white;text-decoration:none;flex-shrink:0;">▶ Watch</a>
+                  </div>
+                  <div style="display:flex;gap:10px;align-items:center;justify-content:space-between;margin-top:6px;">
+                    <div style="display:flex;gap:10px;">
+                      <span style="font-size:10px;color:var(--purple-light);font-weight:600;">Sets: ${ex.sets}</span>
+                      <span style="font-size:10px;color:var(--purple-light);font-weight:600;">Reps: ${ex.reps}</span>
+                      <span style="font-size:10px;color:var(--purple-light);font-weight:600;">Rest: ${ex.rest}</span>
+                    </div>
+                    <button onclick="event.stopPropagation();startTimer(30)" style="background:rgba(124,58,237,0.2);border:1px solid rgba(124,58,237,0.4);border-radius:100px;padding:3px 10px;font-size:10px;font-weight:600;color:var(--purple-light);cursor:pointer;font-family:'DM Sans',sans-serif;">⏱ Rest</button>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+            ` : hasVideo ? `
+            <button class="video-toggle" onclick="event.stopPropagation();toggleVideo('${day.id}','${day.videoUrl}')">▶ Watch Workout</button>
+            <div class="video-embed-wrap" id="vid-${day.id}"></div>
+            ` : `<span style="font-size:11px;color:var(--faint);margin-top:6px;display:block;">Video coming soon</span>`}
+          ` : ''}
+        </div>
+        <div class="day-type ${isRecovery ? 'recovery' : ''}">${day.type}</div>
+      </div>
+    `;
+  });
+
+  html += `<div class="divider"></div><div class="section-label">Weekly Journal</div>`;
+
+  data.journal.forEach((prompt, i) => {
+    const key = `${week}-j${i}`;
+    const saved = state.journalEntries[key] || '';
+    html += `
+      <div class="journal-card">
+        <div class="journal-prompt">${prompt}</div>
+        <textarea class="journal-textarea" id="journal-${key}" placeholder="Write here...">${saved}</textarea>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px;">
+          <span id="saved-indicator-${key}" style="font-size:11px;color:var(--faint);">Tap Save when done</span>
+          <button onclick="saveJournalEntry('${key}')" style="background:var(--purple);color:white;border:none;border-radius:100px;padding:6px 18px;font-size:11px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">Save ✓</button>
+        </div>
+      </div>
+    `;
+  });
+
+  if (data.showCTA) {
+    html += `
+      <div class="mentorship-cta">
+        <div class="cta-tag">✦ You've Done The Work</div>
+        <div class="cta-title">Ready to go <em>deeper</em>?</div>
+        <div class="cta-desc">You've spent 4 weeks proving what's possible. The 1:1 Mentorship is where we personalize everything — your nervous system, your progression, your life. This is where women transform.</div>
+        <button class="cta-btn" onclick="${FEATURES.consultationScheduler ? "window.open('YOUR_BOOKING_LINK_HERE','_blank')" : "showToast('Consultation booking coming soon!')"}">Book Your Free Consultation</button>
+      </div>
+      ${FEATURES.testimonialPrompt ? '' : ''}
+      ${renderConsultationScheduler()}
+    `;
+  }
+
+  document.getElementById('week-detail-content').innerHTML = html;
+}
+
+function backToWeeks() {
+  document.getElementById('week-selector').style.display = 'block';
+  document.getElementById('week-detail').style.display = 'none';
+}
+
+function isDayUnlocked(week, dayIndex) {
+  const data = WEEK_DATA[week];
+  if (dayIndex === 0) return true;
+
+  // Get all training days before this day
+  const previousTrainingDays = data.days.slice(0, dayIndex).filter(d => d.type === 'Training');
+
+  // All previous training days must be completed
+  const allCompleted = previousTrainingDays.every(d => state.completedWorkouts[d.id]);
+  if (!allCompleted) return false;
+
+  // Check 18-hour lock from last completed training day
+  const lastTrainingDay = previousTrainingDays[previousTrainingDays.length - 1];
+  if (!lastTrainingDay) return true;
+
+  const completedAt = state.completedAt && state.completedAt[lastTrainingDay.id];
+  if (!completedAt) return true;
+
+  const eighteenHours = 18 * 60 * 60 * 1000;
+  const timeSince = Date.now() - completedAt;
+  return timeSince >= eighteenHours;
+}
+
+function getTimeRemaining(week, dayIndex) {
+  const data = WEEK_DATA[week];
+  const previousTrainingDays = data.days.slice(0, dayIndex).filter(d => d.type === 'Training');
+  const lastTrainingDay = previousTrainingDays[previousTrainingDays.length - 1];
+  if (!lastTrainingDay) return null;
+
+  const completedAt = state.completedAt && state.completedAt[lastTrainingDay.id];
+  if (!completedAt) return null;
+
+  const eighteenHours = 18 * 60 * 60 * 1000;
+  const remaining = eighteenHours - (Date.now() - completedAt);
+  if (remaining <= 0) return null;
+
+  const hours = Math.floor(remaining / (60 * 60 * 1000));
+  const minutes = Math.floor((remaining % (60 * 60 * 1000)) / (60 * 1000));
+  return `${hours}h ${minutes}m`;
+}
+
+function toggleDay(id, e) {
+  if (e.target.tagName === 'A') return;
+
+  // Parse week from id (format: "1-3")
+  const parts = id.split('-');
+  const week = Number(parts[0]);
+  const data = WEEK_DATA[week];
+  const dayIndex = data.days.findIndex(d => d.id === id);
+  const day = data.days[dayIndex];
+
+  // Block ALL days (training AND rest) that aren't sequentially unlocked
+  if (!isDayUnlocked(week, dayIndex)) {
+    showToast('Complete the previous workout first ✓');
+    return;
+  }
+
+  // Can't uncheck if a later training day is already completed
+  if (state.completedWorkouts[id] && day.type === 'Training') {
+    const laterTrainingDays = data.days.slice(dayIndex + 1).filter(d => d.type === 'Training');
+    const hasLaterCompleted = laterTrainingDays.some(d => state.completedWorkouts[d.id]);
+    if (hasLaterCompleted) {
+      showToast('You\'ve already progressed past this day ✓');
+      return;
+    }
+  }
+
+  state.completedWorkouts[id] = !state.completedWorkouts[id];
+
+  // Save timestamp when completing a training day
+  if (state.completedWorkouts[id] && day.type === 'Training') {
+    if (!state.completedAt) state.completedAt = {};
+    state.completedAt[id] = Date.now();
+  }
+
+  saveState();
+  updateDashboard();
+  generateCode();
+
+  if (state.completedWorkouts[id]) {
+    showToast(day.type === 'Training' ? 'Workout complete ✓ Next session unlocks in 18 hours.' : 'Rest day logged ✓');
+    openWeek(week);
+  } else {
+    openWeek(week);
+  }
+}
+
+function saveJournal(key, val) {
+  state.journalEntries[key] = val;
+  saveState();
+}
+
+function saveJournalEntry(key) {
+  // Try to get value from textarea by id
+  const ta = document.getElementById('journal-' + key) || document.getElementById('daily-journal-' + key);
+  const val = ta ? ta.value : '';
+  state.journalEntries[key] = val;
+  saveState();
+  // Show saved confirmation
+  const indicator = document.getElementById('saved-indicator-' + key);
+  if (indicator) {
+    indicator.textContent = '✓ Saved';
+    indicator.style.color = '#4ade80';
+    setTimeout(() => {
+      indicator.textContent = 'Tap Save when done';
+      indicator.style.color = 'var(--faint)';
+    }, 2500);
+  }
+  showToast('Journal entry saved ✓');
+}
+
+// ══════════════ FEATURE FLAG RENDERERS ══════════════
+
+function renderFeatureSection(featureKey, html) {
+  // Only renders if feature flag is true
+  if (!FEATURES[featureKey]) return '';
+  return html;
+}
+
+// ── CAPACITY TREND CHART ──
+function renderCapacityTrendChart() {
+  if (!FEATURES.capacityTrendChart) return '';
+  const history = state.capacityHistory || [];
+  if (history.length === 0) return '';
+  return `
+    <div class="restore-card" style="margin-bottom:20px;">
+      <div class="restore-title">📈 Capacity Trend</div>
+      <div style="display:flex;align-items:flex-end;gap:4px;height:60px;margin-top:10px;">
+        ${history.slice(-14).map(entry => {
+          const color = entry.level === 'High' ? '#4ade80' : entry.level === 'Moderate' ? '#fbbf24' : '#ef4444';
+          const height = entry.level === 'High' ? '100%' : entry.level === 'Moderate' ? '65%' : '30%';
+          return `<div style="flex:1;background:${color};border-radius:3px 3px 0 0;height:${height};opacity:0.8;" title="${entry.date}: ${entry.level}"></div>`;
+        }).join('')}
+      </div>
+      <div style="font-size:10px;color:var(--card-muted);margin-top:6px;text-align:center;">Last 14 days — 🟢 High 🟡 Moderate 🔴 Low</div>
+    </div>
+  `;
+}
+
+// ── STRENGTH LOG ──
+function renderStrengthLog(dayId, exercises) {
+  if (!FEATURES.strengthLog || !exercises || exercises.length === 0) return '';
+  const logs = state.strengthLogs || {};
+  return `
+    <div style="margin-top:12px;background:rgba(124,58,237,0.05);border:1px solid rgba(124,58,237,0.2);border-radius:12px;padding:12px;">
+      <div style="font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--purple-light);font-weight:600;margin-bottom:10px;">💪 Strength Log</div>
+      ${exercises.map(ex => {
+        const logKey = dayId + '-' + ex.name.replace(/\s/g, '');
+        const saved = logs[logKey] || '';
+        return `
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+            <span style="font-size:11px;color:var(--white);flex:1;">${ex.name}</span>
+            <input type="text" placeholder="Weight used" value="${saved}"
+              onchange="saveStrengthLog('${logKey}', this.value)"
+              style="width:90px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:5px 8px;font-size:11px;color:var(--white);outline:none;text-align:center;" />
+          </div>
+        `;
+      }).join('')}
+    </div>
+  `;
+}
+
+function saveStrengthLog(key, val) {
+  if (!state.strengthLogs) state.strengthLogs = {};
+  state.strengthLogs[key] = val;
+  saveState();
+  showToast('Weight logged ✓');
+}
+
+// ── MEAL LOG ──
+function renderMealLog() {
+  if (!FEATURES.mealLog) return '';
+  const today = new Date().toDateString();
+  const saved = state.mealLogs && state.mealLogs[today] || '';
+  return `
+    <div class="restore-card" style="margin-bottom:16px;">
+      <div class="restore-title">🍽️ Today's Meal Log</div>
+      <div style="font-size:12px;color:var(--card-muted);margin-bottom:12px;">Which carb day did you follow today?</div>
+      <div style="display:flex;gap:8px;margin-bottom:12px;">
+        <button onclick="saveMealLog('Low')" style="flex:1;padding:10px;border-radius:10px;border:2px solid ${saved==='Low'?'#ef4444':'var(--border)'};background:${saved==='Low'?'rgba(239,68,68,0.1)':'transparent'};color:${saved==='Low'?'#ef4444':'var(--card-muted)'};font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">🔴 Low</button>
+        <button onclick="saveMealLog('Moderate')" style="flex:1;padding:10px;border-radius:10px;border:2px solid ${saved==='Moderate'?'#fbbf24':'var(--border)'};background:${saved==='Moderate'?'rgba(251,191,36,0.1)':'transparent'};color:${saved==='Moderate'?'#fbbf24':'var(--card-muted)'};font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">🟡 Moderate</button>
+        <button onclick="saveMealLog('High')" style="flex:1;padding:10px;border-radius:10px;border:2px solid ${saved==='High'?'#4ade80':'var(--border)'};background:${saved==='High'?'rgba(74,222,128,0.1)':'transparent'};color:${saved==='High'?'#4ade80':'var(--card-muted)'};font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">🟢 High</button>
+      </div>
+      ${saved ? `<div style="font-size:11px;color:#4ade80;text-align:center;">✓ ${saved} Carb Day logged</div>` : ''}
+    </div>
+  `;
+}
+
+function saveMealLog(level) {
+  const today = new Date().toDateString();
+  if (!state.mealLogs) state.mealLogs = {};
+  state.mealLogs[today] = level;
+  saveState();
+  showToast(`${level} Carb Day logged ✓`);
+  renderGuide();
+}
+
+// ── MILESTONE BADGES ──
+function checkMilestones() {
+  if (!FEATURES.milestoneBadges) return;
+  const completed = Object.values(state.completedWorkouts).filter(Boolean).length;
+  const badges = state.badges || [];
+
+  const milestones = [
+    { id: 'first-workout', label: '🏅 First Workout Complete', condition: completed >= 1 },
+    { id: 'week1-done', label: '🏆 Week 1 Complete', condition: WEEK_DATA[1].days.filter(d=>d.type==='Training').every(d=>state.completedWorkouts[d.id]) },
+    { id: 'week2-done', label: '🏆 Week 2 Complete', condition: WEEK_DATA[2].days.filter(d=>d.type==='Training').every(d=>state.completedWorkouts[d.id]) },
+    { id: 'week3-done', label: '🏆 Week 3 Complete', condition: WEEK_DATA[3].days.filter(d=>d.type==='Training').every(d=>state.completedWorkouts[d.id]) },
+    { id: 'week4-done', label: '🎖️ Program Complete!', condition: WEEK_DATA[4].days.filter(d=>d.type==='Training').every(d=>state.completedWorkouts[d.id]) },
+    { id: 'streak7', label: '🔥 7-Day Streak', condition: (state.streak || 0) >= 7 },
+    { id: 'hydration-goal', label: '💧 Hydration Goal Reached', condition: (state.waterOz || 0) >= 80 },
+  ];
+
+  milestones.forEach(m => {
+    if (m.condition && !badges.includes(m.id)) {
+      badges.push(m.id);
+      state.badges = badges;
+      saveState();
+      showToast(m.label + ' — Badge earned! 🎉');
+    }
+  });
+}
+
+// ── TESTIMONIAL PROMPT ──
+function checkTestimonialPrompt() {
+  if (!FEATURES.testimonialPrompt) return;
+  const allWeek4Done = WEEK_DATA[4].days.filter(d => d.type === 'Training').every(d => state.completedWorkouts[d.id]);
+  if (!allWeek4Done || state.testimonialShown) return;
+
+  state.testimonialShown = true;
+  saveState();
+
+  const overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(30,16,32,0.97);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;text-align:center;';
+  overlay.innerHTML = `
+    <div style="font-size:40px;margin-bottom:16px;">🎖️</div>
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:0.04em;color:#f5eef8;margin-bottom:8px;">You Did It.</div>
+    <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:16px;color:#cdc6df;margin-bottom:24px;line-height:1.6;max-width:320px;">4 weeks. Real progression. No all-or-nothing. You showed up and you rose.</div>
+    <div style="background:#cdc6df;border-radius:16px;padding:20px;width:100%;max-width:380px;margin-bottom:16px;">
+      <div style="font-size:13px;font-weight:600;color:#1e1020;margin-bottom:10px;">Share your experience — your words help other women find this program.</div>
+      <textarea id="testimonial-text" placeholder="Write your experience here..." style="width:100%;background:white;border:1px solid #b8b0d0;border-radius:10px;padding:12px;font-size:13px;color:#1e1020;min-height:80px;outline:none;box-sizing:border-box;resize:none;font-family:'DM Sans',sans-serif;"></textarea>
+      <button onclick="saveTestimonial()" style="width:100%;background:#7c3aed;color:white;border:none;border-radius:100px;padding:12px;font-size:13px;font-weight:600;cursor:pointer;margin-top:10px;font-family:'DM Sans',sans-serif;">Submit My Experience</button>
+    </div>
+    <button onclick="this.parentElement.remove()" style="background:transparent;border:1px solid #4a3060;color:#cdc6df;border-radius:100px;padding:10px 24px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;">Maybe Later</button>
+  `;
+  document.body.appendChild(overlay);
+}
+
+async function saveTestimonial() {
+  const text = document.getElementById('testimonial-text').value.trim();
+  if (!text) return;
+  state.testimonial = text;
+  state.testimonialSubmitted = true;
+  saveState();
+  // Save to Firebase if available
+  if (window.currentUser && window.db) {
+    try {
+      const { setDoc, doc, serverTimestamp } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
+      await setDoc(doc(window.db, 'testimonials', window.currentUser.uid), {
+        text, email: window.currentUser.email, submittedAt: serverTimestamp()
+      });
+    } catch(e) {}
+  }
+  document.querySelector('[style*="position:fixed;inset:0;background:rgba(30,16,32,0.97)"]')?.remove();
+  showToast('Thank you! Your experience has been shared. 🙏');
+}
+
+// ── CONSULTATION SCHEDULER ──
+function renderConsultationScheduler() {
+  if (!FEATURES.consultationScheduler) return '';
+  return `
+    <div class="mentorship-cta" style="margin-top:16px;">
+      <div class="cta-tag">✦ Ready to Go Deeper?</div>
+      <div class="cta-title">Book Your <em>Free Consultation</em></div>
+      <div class="cta-desc">One conversation could change everything. Let's talk about what's possible for you in the 1:1 Mentorship.</div>
+      <button class="cta-btn" onclick="window.open('YOUR_BOOKING_LINK_HERE','_blank')">Book My Free Consultation →</button>
+    </div>
+  `;
+}
+
+// ── COMMUNITY BOARD ──
+function renderCommunityBoard() {
+  if (!FEATURES.communityBoard) return '';
+  return `
+    <div class="restore-card" style="margin-bottom:16px;">
+      <div class="restore-title">🏆 Community Wins</div>
+      <div style="font-size:12px;color:var(--card-muted);margin-bottom:12px;">Share a win with your fellow risers.</div>
+      <textarea id="community-post" placeholder="Share your win..." style="width:100%;background:#f5f0ff;border:1px solid #e0daea;border-radius:10px;padding:10px;font-size:13px;color:#1e1020;min-height:60px;outline:none;box-sizing:border-box;resize:none;font-family:'DM Sans',sans-serif;margin-bottom:8px;"></textarea>
+      <button onclick="postCommunityWin()" style="background:var(--purple);color:white;border:none;border-radius:100px;padding:8px 20px;font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">Post Win 🏆</button>
+    </div>
+  `;
+}
+
+async function postCommunityWin() {
+  const text = document.getElementById('community-post').value.trim();
+  if (!text || !window.currentUser) return;
+  showToast('Win posted! Keep rising. 🏆');
+  document.getElementById('community-post').value = '';
+}
+
+// ══════════════ CAPACITY CHECK ══════════════
+function selectScale(qId, val) {
+  capacityAnswers[qId] = val;
+  document.querySelectorAll(`#${qId} .scale-btn`).forEach((btn, i) => {
+    btn.classList.toggle('selected', i + 1 === val);
+  });
+}
+
+function calculateCapacity() {
+  const answers = Object.values(capacityAnswers);
+  if (answers.length < 5) { showToast('Please answer all questions'); return; }
+
+  const avg = answers.reduce((a,b) => a+b, 0) / answers.length;
+  const result = document.getElementById('capacityResult');
+  const level = document.getElementById('resultLevel');
+  const guidance = document.getElementById('resultGuidance');
+
+  result.style.display = 'block';
+
+  if (avg >= 4) {
+    level.textContent = 'HIGH';
+    level.className = 'result-level high';
+    guidance.innerHTML = 'Your body is ready. Train with full intention today — push for the progression targets in your current week. This is a green light.<br><br><strong style="color:#4ade80;">🟢 Today\'s Nutrition: High Carb Day</strong><br><span style="font-size:12px;color:var(--muted);">220–300g carbs. Fuel your output — oatmeal, rice, potatoes, fruit.</span>';
+    state.lastCapacity = 'High';
+  // Track capacity history for trend chart
+  if (!state.capacityHistory) state.capacityHistory = [];
+  state.capacityHistory.push({ date: new Date().toDateString(), level: 'High' });
+  if (state.capacityHistory.length > 28) state.capacityHistory = state.capacityHistory.slice(-28);
+  } else if (avg >= 2.5) {
+    level.textContent = 'MODERATE';
+    level.className = 'result-level medium';
+    guidance.innerHTML = 'You have capacity to train — move with intention and listen closely. Adjust load if needed. Completing the work matters more than the number on the bar.<br><br><strong style="color:#fbbf24;">🟡 Today\'s Nutrition: Moderate Carb Day</strong><br><span style="font-size:12px;color:var(--muted);">130–200g carbs. Balanced plate — protein + carb + fat + vegetables.</span>';
+    state.lastCapacity = 'Moderate';
+  if (!state.capacityHistory) state.capacityHistory = [];
+  state.capacityHistory.push({ date: new Date().toDateString(), level: 'Moderate' });
+  if (state.capacityHistory.length > 28) state.capacityHistory = state.capacityHistory.slice(-28);
+  } else {
+    level.textContent = 'LOW';
+    level.className = 'result-level low';
+    guidance.innerHTML = 'Your nervous system needs support today. Choose movement that restores — mobility, a walk, or light activity. Honoring low capacity IS strength training.<br><br><strong style="color:#ef4444;">🔴 Today\'s Nutrition: Low Carb Day</strong><br><span style="font-size:12px;color:var(--muted);">70–120g carbs. Protein + non-starchy veggies. Keep meals steady and supportive.</span>';
+    state.lastCapacity = 'Low';
+  if (!state.capacityHistory) state.capacityHistory = [];
+  state.capacityHistory.push({ date: new Date().toDateString(), level: 'Low' });
+  if (state.capacityHistory.length > 28) state.capacityHistory = state.capacityHistory.slice(-28);
+  }
+  saveState();
+
+  result.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function resetCapacity() {
+  capacityAnswers = {};
+  document.querySelectorAll('.scale-btn').forEach(b => b.classList.remove('selected'));
+  document.getElementById('capacityResult').style.display = 'none';
+}
+
+// ══════════════ AUDIO ══════════════
+let audioPlaying = false;
+const audio = document.getElementById('welcomeAudio');
+
+audio.addEventListener('timeupdate', () => {
+  if (audio.duration) {
+    document.getElementById('audioProgress').style.width = (audio.currentTime / audio.duration * 100) + '%';
+    document.getElementById('currentTime').textContent = formatTime(audio.currentTime);
+    document.getElementById('totalTime').textContent = formatTime(audio.duration);
+  }
+});
+
+audio.addEventListener('ended', () => {
+  audioPlaying = false;
+  document.getElementById('playIcon').innerHTML = '<path d="M8 5v14l11-7z"/>';
+});
+
+function toggleAudio() {
+  if (audioPlaying) {
+    audio.pause();
+    document.getElementById('playIcon').innerHTML = '<path d="M8 5v14l11-7z"/>';
+  } else {
+    audio.play().catch(() => showToast('Add your audio URL to activate'));
+    document.getElementById('playIcon').innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+  }
+  audioPlaying = !audioPlaying;
+}
+
+function seekAudio(e) {
+  const track = e.currentTarget;
+  const pct = e.offsetX / track.offsetWidth;
+  if (audio.duration) audio.currentTime = pct * audio.duration;
+}
+
+function formatTime(s) {
+  return Math.floor(s/60) + ':' + ('0' + Math.floor(s%60)).slice(-2);
+}
+
+// ══════════════ VIDEO EMBED ══════════════
+function toggleVideo(dayId, youtubeUrl) {
+  const wrap = document.getElementById('vid-' + dayId);
+  if (!wrap) return;
+  if (wrap.classList.contains('open')) {
+    wrap.classList.remove('open');
+    wrap.innerHTML = '';
+  } else {
+    // Convert watch URL to embed URL
+    let embedUrl = youtubeUrl;
+    const match = youtubeUrl.match(/(?:v=|youtu\.be\/)([^&?/]+)/);
+    if (match) embedUrl = `https://www.youtube.com/embed/${match[1]}?autoplay=1`;
+    wrap.innerHTML = `<iframe src="${embedUrl}" allowfullscreen allow="autoplay"></iframe>`;
+    wrap.classList.add('open');
+  }
+}
+
+// ══════════════ DAILY JOURNAL ══════════════
+const DAILY_PROMPTS = {
+  High: [
+    "Your capacity is high today. What are you bringing into this training session?",
+    "You showed up on a strong day. What does that feel like in your body right now?",
+    "High energy days are data. What's contributing to how good you feel today?",
+    "You have full capacity today. What intention are you setting before you train?",
+    "On your best days, what habits or choices got you here?",
+    "Your body is ready. What does training with intention mean to you today?",
+    "Strong capacity day. What are you most focused on building right now?"
+  ],
+  Moderate: [
+    "How does it feel to meet yourself in the middle today?",
+    "Moderate capacity is still capacity. What will you do with it today?",
+    "What does it mean to you to train even when you're not at your peak?",
+    "Notice your energy right now. What does your body need most today?",
+    "Balanced days build consistency. What are you learning about your patterns?",
+    "You're here and you're working with what you have. How does that feel?",
+    "Moderate days are where habits are built. What habit are you reinforcing today?"
+  ],
+  Low: [
+    "Your capacity is low today. What does your body need most right now?",
+    "Rest and restoration are part of training. How are you honoring that today?",
+    "Low capacity days tell you something. What is your body communicating?",
+    "What does it feel like to choose recovery over pushing through?",
+    "Honoring a low day is a strength skill. How does that sit with you?",
+    "What would feel most supportive for your nervous system right now?",
+    "Low days are not lost days. What are you grateful for in this season of building?"
+  ]
+};
+
+const WEEK_RECAP = {
+  1: [
+    "Looking back at Week 1 — what patterns did you notice in your capacity day to day?",
+    "What surprised you most about how your body responded this week?",
+    "What is one mindset shift you're carrying into Week 2?"
+  ],
+  2: [
+    "Where did you feel yourself getting stronger this week — physically or mentally?",
+    "Did you honor your capacity when it was low? What made that easy or hard?",
+    "What habit is starting to feel more natural after two weeks?"
+  ],
+  3: [
+    "You're in Week 3. How has your relationship with training changed since Week 1?",
+    "What does progression feel like in your body — not just on paper?",
+    "What is one thing you now know about yourself that you didn't know three weeks ago?"
+  ],
+  4: [
+    "Who are you now compared to the woman who started this program?",
+    "What does sustainable strength mean to you after these four weeks?",
+    "What do you want to carry forward — and what are you ready to leave behind?"
+  ]
+};
+
+function buildDailyJournal(week) {
+  const dayNum = getDaysSinceStart();
+  const dayOfWeek = dayNum % 7; // 0–6 within current week
+  const isEndOfWeek = dayOfWeek === 6;
+
+  // Determine today's capacity from last check-in or default to Moderate
+  const lastCapacity = state.lastCapacity || 'Moderate';
+  const prompts = DAILY_PROMPTS[lastCapacity];
+  const todayPrompt = prompts[dayOfWeek % prompts.length];
+  const journalKey = `daily-${dayNum}`;
+  const savedEntry = state.journalEntries[journalKey] || '';
+
+  const capacityColors = { High: '#4ade80', Moderate: '#fbbf24', Low: '#ef4444' };
+  const capColor = capacityColors[lastCapacity];
+
+  let html = `
+    <div style="font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:12px;">Daily Journal</div>
+
+    <div class="guide-section" style="border-left:3px solid ${capColor};margin-bottom:10px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+        <div style="font-size:10px;letter-spacing:0.15em;text-transform:uppercase;font-weight:600;color:${capColor};">Today's Reflection</div>
+        <div style="font-size:10px;color:var(--muted);">Day ${dayNum + 1}</div>
+      </div>
+      <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:15px;color:#1e1020;line-height:1.6;margin-bottom:12px;">${todayPrompt}</div>
+      <textarea
+        class="journal-textarea"
+        id="daily-journal-${journalKey}"
+        placeholder="Write here..."
+        style="min-height:100px;"
+      >${savedEntry}</textarea>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px;">
+        <span id="saved-indicator-${journalKey}" style="font-size:11px;color:var(--faint);">Tap Save when done</span>
+        <button onclick="saveJournalEntry('${journalKey}')" style="background:var(--purple);color:white;border:none;border-radius:100px;padding:6px 18px;font-size:11px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">Save ✓</button>
+      </div>
+      <div style="font-size:11px;color:var(--faint);margin-top:4px;">Your entry saves to your account automatically.</div>
+    </div>
+  `;
+
+  // End of week recap
+  if (isEndOfWeek) {
+    const recapPrompts = WEEK_RECAP[week] || WEEK_RECAP[1];
+    html += `
+      <div style="font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:12px;margin-top:4px;">End of Week ${week} Recap</div>
+      <div class="guide-section" style="border-left:3px solid var(--purple);margin-bottom:24px;">
+        <div style="font-size:12px;color:var(--muted);font-family:'Cormorant Garamond',serif;font-style:italic;margin-bottom:14px;line-height:1.5;">Take a few minutes to reflect on the full week before you move forward.</div>
+        ${recapPrompts.map((p, i) => {
+          const recapKey = `recap-w${week}-${i}`;
+          const saved = state.journalEntries[recapKey] || '';
+          return `
+            <div style="margin-bottom:14px;">
+              <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:14px;color:#1e1020;margin-bottom:8px;line-height:1.5;">${p}</div>
+              <textarea class="journal-textarea" placeholder="Write here..." onblur="saveJournal('${recapKey}', this.value)">${saved}</textarea>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    `;
+  }
+
+  return html;
+}
+function renderGuide() {
+  const week = getCurrentWeek();
+  const data = WEEK_DATA[week];
+  const allWeek4Done = WEEK_DATA[4].days.every(d => state.completedWorkouts[d.id]);
+
+  const MEALS = {
+    High: {
+      color: '#4ade80', border: '#4ade80', label: '🟢 High Carb Day', range: '220–300g carbohydrates',
+      meals: [
+        { time: 'Breakfast', food: 'Oatmeal with nuts + berries & 2 sausage links or bacon' },
+        { time: 'Snack', food: 'Pear and berry crumble' },
+        { time: 'Lunch', food: 'Egg boil or onion boil' },
+        { time: 'Snack', food: 'Protein smoothie' },
+        { time: 'Dinner', food: 'Spaghetti or leftovers' }
+      ]
+    },
+    Moderate: {
+      color: '#fbbf24', border: '#fbbf24', label: '🟡 Moderate Carb Day', range: '~130–200g carbohydrates',
+      meals: [
+        { time: 'Breakfast', food: 'Eggs with whole grain toast + apple or banana' },
+        { time: 'Snack', food: 'Protein bar' },
+        { time: 'Lunch', food: 'Brown rice or quinoa bowl, grilled chicken/fish/turkey, roasted vegetables' },
+        { time: 'Dinner', food: 'Lean protein + rice or sweet potato & steamed veggies' },
+        { time: 'Snack', food: 'Protein low carb shake' }
+      ]
+    },
+    Low: {
+      color: '#ef4444', border: '#ef4444', label: '🔴 Low Carb Day', range: '70–120g complex carbohydrates',
+      meals: [
+        { time: 'Breakfast', food: 'Egg scramble with spinach & peppers (avocado slices)' },
+        { time: 'Snack', food: 'Pinwheel turkey & provolone with lettuce' },
+        { time: 'Lunch', food: 'Large mixed greens salad w/ grilled chicken, salmon, or shrimp (balsamic dressing)' },
+        { time: 'Snack', food: 'Greek yogurt & mixed berries' },
+        { time: 'Dinner', food: 'Grilled or blackened protein + non-starchy veggies (broccoli, zucchini)' },
+        { time: 'Snack', food: 'Whey shake (low carb)' }
+      ]
+    }
+  };
+
+  const weekDays = [
+    { day: 'Monday',    training: 'Lower Body',         capacity: 'High' },
+    { day: 'Tuesday',   training: 'Upper Body Push',    capacity: 'High' },
+    { day: 'Wednesday', training: 'Rest',               capacity: 'Low' },
+    { day: 'Thursday',  training: 'Full Body',          capacity: 'Moderate' },
+    { day: 'Friday',    training: 'Mobility & Recovery',capacity: 'Moderate' },
+    { day: 'Saturday',  training: 'Rest',               capacity: 'Low' },
+    { day: 'Sunday',    training: 'Rest',               capacity: 'Low' },
+  ];
+
+  const sevenDayRows = weekDays.map((d, i) => {
+    const m = MEALS[d.capacity];
+    return `
+      <div style="background:#1e1020;border:1px solid #3d2545;border-left:3px solid ${m.border};border-radius:14px;padding:16px;margin-bottom:10px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+          <div>
+            <div style="font-family:'Bebas Neue';font-size:18px;letter-spacing:0.05em;color:#f5eef8;">${d.day}</div>
+            <div style="font-size:11px;color:#b89ec4;">${d.training}</div>
+          </div>
+          <div style="background:#2e1a35;border:1px solid #4a3060;border-radius:100px;padding:4px 12px;font-size:11px;font-weight:600;color:${m.color};">${m.label.split(' ').slice(1).join(' ')}</div>
+        </div>
+        <div style="font-size:10px;color:${m.color};letter-spacing:0.1em;text-transform:uppercase;font-weight:600;margin-bottom:8px;">${m.range}</div>
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          ${m.meals.map(meal => `
+            <div style="display:flex;gap:10px;align-items:flex-start;">
+              <span style="font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:#9d7eb8;font-weight:600;min-width:56px;padding-top:1px;">${meal.time}</span>
+              <span style="font-size:12px;color:#f5eef8;line-height:1.4;">${meal.food}</span>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  let html = `
+    <div class="guide-week-badge">Week ${week} of 4 — Current Week</div>
+    <div class="guide-title">My Toolkit</div>
+    <div class="guide-subtitle" style="margin-bottom:20px;">Your weekly guide + nutrition framework in one place.</div>
+
+    <div class="guide-offline-note">
+      📱 <span>Once loaded, this page works offline. Bookmark it for no-Wi-Fi access.</span>
+    </div>
+
+    <button class="guide-print-btn" onclick="printGuide(${week})">🖨 Save or Print This Week's Guide</button>
+    <button class="guide-print-btn" style="background:#1e1020;margin-top:-10px;" onclick="printShoppingList()">🛒 Print Master Shopping List</button>
+
+    <!-- DAILY JOURNAL -->
+    ${buildDailyJournal(week)}
+
+    <!-- NUTRITION DIVIDER -->
+    <div style="font-family:'Bebas Neue';font-size:32px;letter-spacing:0.04em;line-height:1;margin-bottom:4px;color:#f5eef8;">Structured Eating<br><span style="color:#cdc6df;">Without Extremes</span></div>
+    <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:13px;color:#cdc6df;margin-bottom:20px;line-height:1.5;">Carb needs change day to day. Higher activity days require more fuel. Rest days feel better with fewer carbs.</div>
+
+    <!-- PROTEIN ANCHOR -->
+    <div class="guide-section" style="border-left:3px solid var(--purple);margin-bottom:10px;">
+      <div class="guide-section-title">The Protein Anchor Rule</div>
+      <div style="font-size:13px;color:#1e1020;font-weight:600;margin-bottom:6px;">Every meal contains a protein source. It is your non-negotiable.</div>
+      <div style="font-size:12px;color:#4a3d5c;line-height:1.9;">Eggs • Greek yogurt • Chicken • Turkey • Beef • Fish • Tofu / Tempeh • Protein shake</div>
+      <div style="margin-top:10px;font-size:12px;color:#4a3d5c;font-family:'Cormorant Garamond',serif;font-style:italic;line-height:1.5;">Protein stabilizes blood sugar, supports recovery, and improves satiety.</div>
+    </div>
+
+    <!-- CARB REGULATION -->
+    <div class="guide-section" style="margin-bottom:10px;">
+      <div class="guide-section-title">Intensity-Based Carb Regulation</div>
+      <div style="font-size:12px;color:#4a3d5c;font-family:'Cormorant Garamond',serif;font-style:italic;margin-bottom:12px;">We do not eliminate carbohydrates. We regulate them.</div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div style="display:flex;gap:10px;align-items:flex-start;"><span>🟢</span><div><div style="font-size:12px;font-weight:600;color:#1e1020;margin-bottom:2px;">High-Intensity / Lower Body Days</div><div style="font-size:11px;color:#4a3d5c;">Include a carb source pre- or post-training → rice, potatoes, fruit, oats</div></div></div>
+        <div style="display:flex;gap:10px;align-items:flex-start;"><span>🟡</span><div><div style="font-size:12px;font-weight:600;color:#1e1020;margin-bottom:2px;">Moderate Training Days</div><div style="font-size:11px;color:#4a3d5c;">Balanced plate → protein + carb + fat + vegetables</div></div></div>
+        <div style="display:flex;gap:10px;align-items:flex-start;"><span>🔴</span><div><div style="font-size:12px;font-weight:600;color:#1e1020;margin-bottom:2px;">Restore / Low-Intensity Days</div><div style="font-size:11px;color:#4a3d5c;">Protein + vegetables + moderate carbs → keep meals steady, not excessive</div></div></div>
+      </div>
+    </div>
+
+    <!-- LOW CARB DAY -->
+    <div class="guide-section" style="border-left:3px solid #ef4444;margin-bottom:10px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+        <span style="font-size:18px;">🔴</span>
+        <div><div style="font-family:'Bebas Neue';font-size:22px;letter-spacing:0.04em;color:#ef4444;">Low Carb Day</div><div style="font-size:11px;color:#4a3d5c;">1–2 servings • 70–120g complex carbohydrates</div></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="font-size:12px;color:#1e1020;"><span style="color:#7c3aed;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;display:block;margin-bottom:1px;">Breakfast</span>Egg scramble with spinach & peppers (avocado slices)</div>
+        <div style="font-size:12px;color:#1e1020;"><span style="color:#7c3aed;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;display:block;margin-bottom:1px;">Snack</span>Pinwheel turkey & provolone with lettuce</div>
+        <div style="font-size:12px;color:#1e1020;"><span style="color:#7c3aed;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;display:block;margin-bottom:1px;">Lunch</span>Large mixed greens salad w/ grilled chicken, salmon, or shrimp (balsamic dressing)</div>
+        <div style="font-size:12px;color:#1e1020;"><span style="color:#7c3aed;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;display:block;margin-bottom:1px;">Snack</span>Greek yogurt & mixed berries</div>
+        <div style="font-size:12px;color:#1e1020;"><span style="color:#7c3aed;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;display:block;margin-bottom:1px;">Dinner</span>Grilled or blackened protein (fish, turkey, chicken, lean beef) + non-starchy veggies</div>
+        <div style="font-size:12px;color:#1e1020;"><span style="color:#7c3aed;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;display:block;margin-bottom:1px;">Snack</span>Whey shake (low carb)</div>
+      </div>
+    </div>
+
+    <!-- MODERATE CARB DAY -->
+    <div class="guide-section" style="border-left:3px solid #fbbf24;margin-bottom:10px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+        <span style="font-size:18px;">🟡</span>
+        <div><div style="font-family:'Bebas Neue';font-size:22px;letter-spacing:0.04em;color:#b8860b;">Moderate Carb Day</div><div style="font-size:11px;color:#4a3d5c;">~130–200g carbohydrates • 0.8–1.0g protein per lb bodyweight</div></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="font-size:12px;color:#1e1020;"><span style="color:#7c3aed;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;display:block;margin-bottom:1px;">Breakfast</span>Eggs with whole grain toast + apple or banana</div>
+        <div style="font-size:12px;color:#1e1020;"><span style="color:#7c3aed;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;display:block;margin-bottom:1px;">Snack</span>Protein bar</div>
+        <div style="font-size:12px;color:#1e1020;"><span style="color:#7c3aed;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;display:block;margin-bottom:1px;">Lunch</span>Brown rice or quinoa bowl, grilled chicken/fish/turkey, roasted vegetables</div>
+        <div style="font-size:12px;color:#1e1020;"><span style="color:#7c3aed;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;display:block;margin-bottom:1px;">Dinner</span>Lean protein (lean beef, fish, chicken) + rice or sweet potato & steamed veggies</div>
+        <div style="font-size:12px;color:#1e1020;"><span style="color:#7c3aed;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;display:block;margin-bottom:1px;">Snack</span>Protein low carb shake</div>
+      </div>
+    </div>
+
+    <!-- HIGH CARB DAY -->
+    <div class="guide-section" style="border-left:3px solid #4ade80;margin-bottom:10px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+        <span style="font-size:18px;">🟢</span>
+        <div><div style="font-family:'Bebas Neue';font-size:22px;letter-spacing:0.04em;color:#16a34a;">High Carb Day</div><div style="font-size:11px;color:#4a3d5c;">220–300g carbohydrates</div></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="font-size:12px;color:#1e1020;"><span style="color:#7c3aed;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;display:block;margin-bottom:1px;">Breakfast</span>Oatmeal with nuts + berries & 2 sausage links or bacon</div>
+        <div style="font-size:12px;color:#1e1020;"><span style="color:#7c3aed;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;display:block;margin-bottom:1px;">Snack</span>Pear and berry crumble</div>
+        <div style="font-size:12px;color:#1e1020;"><span style="color:#7c3aed;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;display:block;margin-bottom:1px;">Lunch</span>Egg boil or onion boil</div>
+        <div style="font-size:12px;color:#1e1020;"><span style="color:#7c3aed;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;display:block;margin-bottom:1px;">Snack</span>Protein smoothie</div>
+        <div style="font-size:12px;color:#1e1020;"><span style="color:#7c3aed;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;display:block;margin-bottom:1px;">Dinner</span>Spaghetti or leftovers</div>
+      </div>
+    </div>
+
+    <!-- 7-DAY EXAMPLE WEEK -->
+    <div style="font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:#4a3d5c;font-weight:600;margin:20px 0 12px;">7-Day Example Week</div>
+    ${sevenDayRows}
+
+    <!-- HYDRATION -->
+    <div class="guide-section" style="border-left:3px solid var(--purple);margin-bottom:24px;">
+      <div class="guide-section-title">Hydration Standard</div>
+      <div style="font-family:'Bebas Neue';font-size:28px;letter-spacing:0.04em;color:var(--purple);margin-bottom:6px;">80–100 oz Water Daily</div>
+      <div style="font-size:12px;color:#1e1020;line-height:1.6;">Add electrolytes if training intensely or sweating heavily.<br><em style="font-family:'Cormorant Garamond',serif;font-size:13px;color:#4a3d5c;">Dehydration mimics fatigue. Do not mistake it for lack of motivation.</em></div>
+    </div>
+
+    ${allWeek4Done ? `
+    <div class="guide-section" style="border-color:var(--purple);text-align:center;margin-bottom:24px;">
+      <div class="guide-section-title">🎉 Program Complete</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:15px;color:#4a3d5c;margin-bottom:14px;line-height:1.6;">You've completed all 4 weeks. The full program guide is now available.</div>
+      <button class="guide-print-btn" style="margin-bottom:0" onclick="printFullGuide()">🖨 Save Full 4-Week Guide</button>
+    </div>` : ''}
+  `;
+
+  document.getElementById('guide-content').innerHTML = html;
+}
+
+// ══════════════ PRINT ══════════════
+function printGuide(week) {
+  const data = WEEK_DATA[week];
+
+  const existing = document.getElementById('guide-overlay');
+  if (existing) existing.remove();
+
+  const overlay = document.createElement('div');
+  overlay.id = 'guide-overlay';
+  overlay.style.cssText = 'position:fixed;inset:0;background:white;z-index:9999;overflow-y:auto;padding:24px;font-family:Georgia,serif;color:#1e1020;';
+
+  overlay.innerHTML = `
+    <div style="max-width:600px;margin:0 auto;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding-bottom:16px;border-bottom:2px solid #1e1020;">
+        <div>
+          <div style="font-size:22px;font-weight:bold;letter-spacing:0.04em;">REBUILD & RISE</div>
+          <div style="font-size:11px;color:#4a3d5c;letter-spacing:0.08em;text-transform:uppercase;margin-top:2px;">Week ${week} — ${data.name}</div>
+          <div style="font-size:10px;color:#888;margin-top:2px;">Coach Paris Simone | Stress-Integrated Strength System™</div>
+        </div>
+        <button onclick="document.getElementById('guide-overlay').remove()" style="background:#1e1020;color:white;border:none;border-radius:100px;padding:8px 18px;font-size:12px;font-weight:600;cursor:pointer;">✕ Close</button>
+      </div>
+
+      <div style="font-style:italic;font-size:13px;color:#4a3d5c;margin-bottom:4px;line-height:1.6;">${data.goal}</div>
+      <div style="font-size:11px;color:#888;margin-bottom:20px;">Use your phone's share button → "Print" to save as PDF.</div>
+
+      <div style="font-size:13px;font-weight:bold;text-transform:uppercase;letter-spacing:0.08em;border-bottom:2px solid #1e1020;padding-bottom:5px;margin-bottom:14px;">Training Days</div>
+
+      ${data.days.map((d, i) => `
+        <div style="margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid #eee;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+            <div style="width:14px;height:14px;border:1.5px solid #1e1020;border-radius:2px;flex-shrink:0;"></div>
+            <div>
+              <div style="font-size:13px;font-weight:700;">${d.name}</div>
+              <div style="font-size:11px;color:#4a3d5c;">${d.detail}</div>
+            </div>
+            <div style="margin-left:auto;font-size:10px;font-weight:600;color:${d.type==='Recovery'?'#4ade80':'#7c3aed'};text-transform:uppercase;letter-spacing:0.08em;">${d.type}</div>
+          </div>
+          ${d.exercises && d.exercises.length > 0 ? `
+            <div style="margin-left:22px;">
+              ${d.exercises.map(ex => `
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 10px;background:#f9f7fc;border-radius:8px;margin-bottom:4px;">
+                  <span style="font-size:12px;color:#1e1020;font-weight:500;">${ex.name}</span>
+                  <span style="font-size:11px;color:#4a3d5c;white-space:nowrap;margin-left:8px;">${ex.sets} sets · ${ex.reps} reps · ${ex.rest} rest</span>
+                </div>
+              `).join('')}
+            </div>
+          ` : d.type === 'Recovery' ? `
+            <div style="margin-left:22px;font-size:12px;color:#888;font-style:italic;">Active recovery — honor your nervous system today.</div>
+          ` : `
+            <div style="margin-left:22px;font-size:12px;color:#888;font-style:italic;">Exercises coming soon — check the app for updates.</div>
+          `}
+        </div>
+      `).join('')}
+
+      <div style="font-size:13px;font-weight:bold;text-transform:uppercase;letter-spacing:0.08em;border-bottom:2px solid #1e1020;padding-bottom:5px;margin:24px 0 12px;">Weekly Journal Prompts</div>
+      ${data.journal.map(p => `
+        <div style="padding:12px 0;border-bottom:1px solid #eee;">
+          <div style="font-style:italic;font-size:13px;color:#1e1020;margin-bottom:10px;">${p}</div>
+          <div style="height:40px;border-bottom:1px solid #ccc;"></div>
+          <div style="height:40px;border-bottom:1px solid #ccc;"></div>
+        </div>
+      `).join('')}
+
+      <div style="margin-top:24px;padding-top:12px;border-top:1px solid #ccc;font-size:10px;color:#aaa;text-align:center;">
+        coachparis.github.io/Rebuild-and-rise • Rebuild & Rise by Coach Paris Simone
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(overlay);
+}
+
+function printShoppingList() {
+  const categories = [
+    { name: 'Proteins', emoji: '🥩', items: ['Eggs','Chicken breast','Ground turkey','Canned or fresh salmon','Shrimp','Lean ground beef','Fish (tilapia, cod, or preferred)','Turkey deli slices','Provolone cheese slices','Whey protein powder','Greek yogurt (plain)','Tofu or tempeh','Sausage links (chicken or turkey)','Bacon (turkey or regular)','Protein bars','Protein shake mix'] },
+    { name: 'Carbohydrates', emoji: '🌾', items: ['Oatmeal (rolled oats)','Brown rice','Quinoa','Whole grain bread','Sweet potatoes','White or yellow potatoes','Pasta / Spaghetti','Rice cakes','Banana','Apple','Pear','Mixed berries (fresh or frozen)','Fruit for smoothies','Onions (for onion boil)','Pasta sauce'] },
+    { name: 'Vegetables', emoji: '🥦', items: ['Spinach (fresh or frozen)','Mixed greens / salad blend','Broccoli','Zucchini','Bell peppers','Roasted veggie mix','Steamed veggie blend','Cherry tomatoes','Cucumber','Celery','Lettuce (for wraps)','Avocado'] },
+    { name: 'Fats', emoji: '🥑', items: ['Avocado / Avocado slices','Olive oil','Nuts (almonds, walnuts, or mixed)','Nut butter (almond or peanut)','Balsamic dressing','Avocado oil cooking spray','Seeds (chia, flax, or sunflower)'] },
+    { name: 'Snacks & Extras', emoji: '🫙', items: ['Greek yogurt cups','Mixed berries (snack size)','Protein bars','Rice cakes','Granola','Turkey pinwheel ingredients (tortilla, turkey, provolone, lettuce)','Pear and berry crumble (pears, berries, oats, honey)','Electrolyte packets or powder','Sparkling water / flavored water','Spices & seasonings (garlic, paprika, cumin, salt, pepper)','Low-carb whey shake'] }
+  ];
+
+  // Remove existing overlay if present
+  const existing = document.getElementById('shop-overlay');
+  if (existing) existing.remove();
+
+  const overlay = document.createElement('div');
+  overlay.id = 'shop-overlay';
+  overlay.style.cssText = 'position:fixed;inset:0;background:white;z-index:9999;overflow-y:auto;padding:24px;font-family:Georgia,serif;color:#1e1020;';
+
+  overlay.innerHTML = `
+    <div style="max-width:600px;margin:0 auto;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding-bottom:16px;border-bottom:2px solid #1e1020;">
+        <div>
+          <div style="font-size:22px;font-weight:bold;letter-spacing:0.04em;">REBUILD & RISE</div>
+          <div style="font-size:11px;color:#4a3d5c;letter-spacing:0.08em;text-transform:uppercase;margin-top:2px;">Master Shopping List</div>
+          <div style="font-size:10px;color:#888;margin-top:2px;">Coach Paris Simone</div>
+        </div>
+        <button onclick="document.getElementById('shop-overlay').remove()" style="background:#1e1020;color:white;border:none;border-radius:100px;padding:8px 18px;font-size:12px;font-weight:600;cursor:pointer;letter-spacing:0.05em;">✕ Close</button>
+      </div>
+
+      <div style="font-size:12px;color:#4a3d5c;font-style:italic;margin-bottom:20px;line-height:1.6;">
+        Full master list covering Low, Moderate, and High Carb days. Check off as you shop. Use your phone's share button → "Print" to save as PDF.
+      </div>
+
+      ${categories.map(cat => `
+        <div style="margin-bottom:20px;">
+          <div style="font-size:13px;font-weight:bold;text-transform:uppercase;letter-spacing:0.08em;border-bottom:2px solid #1e1020;padding-bottom:5px;margin-bottom:10px;">${cat.emoji} ${cat.name}</div>
+          ${cat.items.map(item => `
+            <div style="display:flex;align-items:flex-start;gap:10px;padding:6px 0;border-bottom:1px solid #eee;">
+              <div style="width:14px;height:14px;border:1.5px solid #1e1020;border-radius:2px;flex-shrink:0;margin-top:2px;"></div>
+              <span style="font-size:13px;line-height:1.4;">${item}</span>
+            </div>
+          `).join('')}
+        </div>
+      `).join('')}
+
+      <div style="margin-top:24px;padding-top:12px;border-top:1px solid #ccc;font-size:10px;color:#aaa;text-align:center;">
+        parispassports.github.io/rebuild-and-rise • Rebuild & Rise by Coach Paris Simone
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(overlay);
+}
+function printFullGuide() {
+  const area = document.getElementById('print-area');
+  let html = `
+    <h1>Rebuild & Rise — Full 4-Week Program</h1>
+    <p style="font-style:italic;color:#555;margin-bottom:8px">A 4-Week Strength Progression for Women Ready for More</p>
+    <p style="font-size:11px;color:#888;margin-bottom:28px">Coach Paris Simone</p>
+  `;
+  [1,2,3,4].forEach(w => {
+    const data = WEEK_DATA[w];
+    html += `
+      <h2>Week ${w}: ${data.name}</h2>
+      <p style="font-style:italic;color:#555;margin-bottom:12px">${data.goal}</p>
+      ${data.days.map((d,i) => `<div class="print-day"><span class="print-check"></span><strong>${d.name}</strong><br><span style="color:#555;font-size:12px">${d.detail}</span></div>`).join('')}
+      <p><strong>Journal Prompts:</strong></p>
+      ${data.journal.map(p => `<p>• ${p}</p>`).join('')}
+    `;
+  });
+  html += `<p style="font-size:10px;color:#aaa;margin-top:32px">parispassports.github.io/rebuild-and-rise</p>`;
+  area.innerHTML = html;
+  window.print();
+}
+
+// ══════════════ PROGRESS TRACKER ══════════════
+const MEASUREMENTS = ['Waist', 'Hips', 'Thigh', 'Calf', 'Chest', 'Neck', 'Upper Arm'];
+
+function saveProgress(key, val) {
+  if (!state.progressData) state.progressData = {};
+  state.progressData[key] = val;
+  saveState();
+  updateHomeProgressSummary();
+}
+
+function updateHomeProgressSummary() {
+  const el = document.getElementById('home-progress-summary');
+  if (!el) return;
+  const pd = state.progressData || {};
+  const startWeight = pd['start-weight'];
+  const currentWeight = pd['week2-weight'] || pd['end-weight'];
+  const startWaist = pd['start-Waist'];
+  const endWaist = pd['end-Waist'];
+
+  let summary = '';
+  if (startWeight) {
+    summary += `Starting weight: <strong>${startWeight} lbs</strong>`;
+    if (currentWeight) summary += ` → <strong>${currentWeight} lbs</strong>`;
+    summary += '<br>';
+  }
+  if (startWaist) {
+    summary += `Waist: <strong>${startWaist}"</strong>`;
+    if (endWaist) summary += ` → <strong>${endWaist}"</strong>`;
+    summary += '<br>';
+  }
+  if (!startWeight && !startWaist) {
+    summary = 'Tap to log your starting measurements and weight.';
+  }
+  el.innerHTML = summary;
+}
+
+function renderProgress() {
+  const days = getDaysSinceStart();
+  const pd = state.progressData || {};
+  const showWeek2 = days >= 14;
+  const showEnd = days >= 28;
+
+  const checkInBlock = (label, prefix, photoLabel, photoNote, color) => {
+    const fields = MEASUREMENTS.map(m => `
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid #e0daea;">
+        <span style="font-size:13px;color:#1e1020;font-weight:500;">${m}</span>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <input
+            type="number"
+            placeholder="—"
+            value="${pd[prefix + '-' + m] || ''}"
+            onchange="saveProgress('${prefix}-${m}', this.value)"
+            style="width:64px;text-align:center;background:#f5f0ff;border:1px solid #cdc6df;border-radius:8px;padding:6px;font-size:13px;color:#1e1020;outline:none;"
+          />
+          <span style="font-size:11px;color:#4a3d5c;">in</span>
+        </div>
+      </div>
+    `).join('');
+
+    return `
+      <div style="background:#fff;border:1px solid #e0daea;border-left:3px solid ${color};border-radius:16px;padding:20px;margin-bottom:14px;">
+        <div style="font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:${color};font-weight:600;margin-bottom:4px;">${label}</div>
+
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #e0daea;margin-bottom:8px;">
+          <span style="font-size:13px;color:#1e1020;font-weight:600;">Weight</span>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <input
+              type="number"
+              placeholder="—"
+              value="${pd[prefix + '-weight'] || ''}"
+              onchange="saveProgress('${prefix}-weight', this.value)"
+              style="width:64px;text-align:center;background:#f5f0ff;border:1px solid #cdc6df;border-radius:8px;padding:6px;font-size:13px;color:#1e1020;outline:none;"
+            />
+            <span style="font-size:11px;color:#4a3d5c;">lbs</span>
+          </div>
+        </div>
+
+        ${fields}
+
+        <div style="margin-top:14px;background:#f5f0ff;border:1px solid #e0daea;border-radius:12px;padding:14px;">
+          <div style="font-size:11px;font-weight:600;color:#7c3aed;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px;">📸 ${photoLabel}</div>
+          <div style="font-size:12px;color:#4a3d5c;line-height:1.6;margin-bottom:12px;">${photoNote}</div>
+          <button onclick="openPoseCamera('${prefix}')" style="width:100%;background:#7c3aed;color:white;border:none;border-radius:10px;padding:12px;font-size:12px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;font-family:'DM Sans',sans-serif;">
+            📷 Open Guided Pose Camera
+          </button>
+          ${pd[prefix + '-photo'] ? `
+            <div style="margin-top:10px;text-align:center;">
+              <div style="font-size:11px;color:#4ade80;font-weight:600;margin-bottom:6px;">✓ Photo captured — ${pd[prefix + '-photoDate'] || ''}</div>
+              <img src="${pd[prefix + '-photo']}" style="width:100%;border-radius:10px;max-height:200px;object-fit:cover;" />
+            </div>
+          ` : ''}
+        </div>
+      </div>
+    `;
+  };
+
+  // Build comparison table if we have start + end data
+  let comparisonHTML = '';
+  if (showEnd && pd['start-weight'] && pd['end-weight']) {
+    const rows = MEASUREMENTS.map(m => {
+      const start = parseFloat(pd['start-' + m]) || 0;
+      const end = parseFloat(pd['end-' + m]) || 0;
+      const diff = start && end ? (end - start).toFixed(1) : '—';
+      const color = diff !== '—' && parseFloat(diff) < 0 ? '#4ade80' : diff !== '—' && parseFloat(diff) > 0 ? '#ef4444' : '#888';
+      return `
+        <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #e0daea;font-size:12px;">
+          <span style="color:#1e1020;font-weight:500;">${m}</span>
+          <span style="color:#4a3d5c;">${pd['start-' + m] || '—'}"</span>
+          <span style="color:#4a3d5c;">${pd['end-' + m] || '—'}"</span>
+          <span style="font-weight:600;color:${color};">${diff !== '—' ? (parseFloat(diff) < 0 ? diff : '+' + diff) + '"' : '—'}</span>
+        </div>
+      `;
+    }).join('');
+
+    const weightDiff = (parseFloat(pd['end-weight']) - parseFloat(pd['start-weight'])).toFixed(1);
+    const wColor = parseFloat(weightDiff) < 0 ? '#4ade80' : '#ef4444';
+
+    comparisonHTML = `
+      <div style="background:#fff;border:1px solid #e0daea;border-radius:16px;padding:20px;margin-bottom:14px;">
+        <div style="font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:#7c3aed;font-weight:600;margin-bottom:14px;">✨ Your Transformation</div>
+        <div style="display:flex;justify-content:space-between;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:#888;padding-bottom:6px;border-bottom:2px solid #1e1020;margin-bottom:4px;">
+          <span>Measurement</span><span>Start</span><span>End</span><span>Change</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #e0daea;font-size:12px;">
+          <span style="color:#1e1020;font-weight:600;">Weight</span>
+          <span style="color:#4a3d5c;">${pd['start-weight']} lbs</span>
+          <span style="color:#4a3d5c;">${pd['end-weight']} lbs</span>
+          <span style="font-weight:600;color:${wColor};">${parseFloat(weightDiff) < 0 ? weightDiff : '+' + weightDiff} lbs</span>
+        </div>
+        ${rows}
+      </div>
+    `;
+  }
+
+  const html = `
+    <div class="guide-week-badge">4-Week Body Progress</div>
+    <div class="guide-title" style="color:#f5eef8;">Track Your Rise</div>
+    <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:14px;color:#cdc6df;margin-bottom:24px;line-height:1.5;">Strength is not only something you perform — it is something you build. Let the numbers tell your story.</div>
+
+    ${comparisonHTML}
+
+    ${checkInBlock(
+      'Week 1 — Starting Point',
+      'start',
+      'Starting Photo',
+      'Take a front, side, and back photo today in fitted clothing. Save them somewhere private — you\'ll compare at the end of the program.',
+      '#7c3aed'
+    )}
+
+    ${showWeek2 ? checkInBlock(
+      'Week 2 — Check-In',
+      'week2',
+      'Week 2 Photo (Optional)',
+      'Optional mid-program photo. Notice how your posture and presence have shifted — not just your body.',
+      '#fbbf24'
+    ) : `
+      <div style="background:#fff;border:1px solid #e0daea;border-radius:16px;padding:20px;margin-bottom:14px;opacity:0.5;text-align:center;">
+        <div style="font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:#888;font-weight:600;margin-bottom:8px;">Week 2 Check-In</div>
+        <div style="font-size:13px;color:#4a3d5c;">Unlocks at Day 14</div>
+      </div>
+    `}
+
+    ${showEnd ? checkInBlock(
+      'End of Program — Final Check-In',
+      'end',
+      'Post-Program Photo',
+      'Take your final photos 3 days after completing the program — your body is still changing. Same angles, same clothing as Week 1.',
+      '#4ade80'
+    ) : `
+      <div style="background:#fff;border:1px solid #e0daea;border-radius:16px;padding:20px;margin-bottom:14px;opacity:0.5;text-align:center;">
+        <div style="font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:#888;font-weight:600;margin-bottom:8px;">End of Program</div>
+        <div style="font-size:13px;color:#4a3d5c;">Unlocks at Day 28</div>
+      </div>
+    `}
+  `;
+
+  document.getElementById('progress-content').innerHTML = html;
+  updateHomeProgressSummary();
+}
+
+// ══════════════ QUICK CAPACITY CHECK (HOME) ══════════════
+function quickCapacityCheck(level) {
+  const today = new Date().toDateString();
+  state.lastCapacity = level;
+  state.lastCapacityDate = today;
+
+  // Track history
+  if (!state.capacityHistory) state.capacityHistory = [];
+  state.capacityHistory.push({ date: today, level });
+  if (state.capacityHistory.length > 28) state.capacityHistory = state.capacityHistory.slice(-28);
+  saveState();
+
+  const configs = {
+    High: { emoji: '🟢', color: '#16a34a', note: 'High Carb Day — fuel your training today.' },
+    Moderate: { emoji: '🟡', color: '#b8860b', note: 'Moderate Carb Day — balanced plate today.' },
+    Low: { emoji: '🔴', color: '#ef4444', note: 'Low Carb Day — restore and support your system.' }
+  };
+  const c = configs[level];
+
+  document.getElementById('home-capacity-emoji').textContent = c.emoji;
+  document.getElementById('home-capacity-level').textContent = level + ' Capacity';
+  document.getElementById('home-capacity-level').style.color = c.color;
+  document.getElementById('home-capacity-note').textContent = c.note;
+  document.getElementById('home-capacity-result').style.display = 'block';
+  document.getElementById('home-capacity-buttons').style.display = 'none';
+
+  showToast(`${level} capacity logged ✓`);
+}
+
+function initHomeCapacity() {
+  const today = new Date().toDateString();
+  if (state.lastCapacityDate === today && state.lastCapacity) {
+    quickCapacityCheck(state.lastCapacity);
+  }
+}
+
+// ══════════════ PUSH NOTIFICATIONS ══════════════
+async function initPushNotifications() {
+  if (!FEATURES.pushNotifications) return;
+  if (!('Notification' in window) || !('serviceWorker' in navigator)) return;
+
+  if (Notification.permission === 'default') {
+    // Ask permission with a friendly prompt first
+    showNotificationPrompt();
+  } else if (Notification.permission === 'granted') {
+    scheduleDailyReminders();
+  }
+}
+
+function showNotificationPrompt() {
+  const existing = document.getElementById('notif-prompt');
+  if (existing || state.notifPromptShown) return;
+  state.notifPromptShown = true;
+  saveState();
+
+  const prompt = document.createElement('div');
+  prompt.id = 'notif-prompt';
+  prompt.style.cssText = 'position:fixed;bottom:80px;left:16px;right:16px;background:#1e1020;border:1px solid #7c3aed;border-radius:16px;padding:16px;z-index:9000;';
+  prompt.innerHTML = `
+    <div style="font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:#9d5cf6;font-weight:600;margin-bottom:6px;">🔔 Stay Accountable</div>
+    <div style="font-size:13px;color:#f5eef8;margin-bottom:12px;line-height:1.5;">Get daily reminders for your capacity check-in, workouts, and hydration goal.</div>
+    <div style="display:flex;gap:8px;">
+      <button onclick="enableNotifications()" style="flex:1;background:#7c3aed;color:white;border:none;border-radius:100px;padding:10px;font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">Enable Reminders</button>
+      <button onclick="document.getElementById('notif-prompt').remove()" style="flex:0;background:transparent;border:1px solid #4a3060;color:#cdc6df;border-radius:100px;padding:10px 16px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;">Later</button>
+    </div>
+  `;
+  document.body.appendChild(prompt);
+
+  // Auto dismiss after 8 seconds
+  setTimeout(() => prompt.remove(), 8000);
+}
+
+async function enableNotifications() {
+  const permission = await Notification.requestPermission();
+  document.getElementById('notif-prompt')?.remove();
+
+  if (permission === 'granted') {
+    showToast('Reminders enabled ✓ We\'ll keep you on track 🔔');
+    state.notificationsEnabled = true;
+    saveState();
+    scheduleDailyReminders();
+  } else {
+    showToast('You can enable reminders anytime in your browser settings.');
+  }
+}
+
+function scheduleDailyReminders() {
+  if (!state.notificationsEnabled) return;
+
+  const now = new Date();
+  const today = now.toDateString();
+
+  // Schedule 8am morning reminder
+  scheduleNotificationAt(8, 0, '🌅 Good morning!', getMorningMessage(), today + '-morning');
+
+  // Schedule 6pm evening reminder
+  scheduleNotificationAt(18, 0, '🌆 Evening check-in', getEveningMessage(), today + '-evening');
+}
+
+function scheduleNotificationAt(hour, minute, title, body, id) {
+  const now = new Date();
+  const target = new Date();
+  target.setHours(hour, minute, 0, 0);
+
+  // If time already passed today skip
+  if (target <= now) return;
+
+  const delay = target.getTime() - now.getTime();
+  const alreadyShown = state.shownNotifications && state.shownNotifications.includes(id);
+  if (alreadyShown) return;
+
+  setTimeout(() => {
+    if (Notification.permission === 'granted') {
+      new Notification(title, {
+        body,
+        icon: '/favicon.ico',
+        badge: '/favicon.ico',
+        tag: id,
+      });
+      if (!state.shownNotifications) state.shownNotifications = [];
+      state.shownNotifications.push(id);
+      // Keep only last 14 days of notification history
+      if (state.shownNotifications.length > 28) state.shownNotifications = state.shownNotifications.slice(-28);
+      saveState();
+    }
+  }, delay);
+}
+
+function getMorningMessage() {
+  const today = new Date().toDateString();
+  const capacityDone = state.lastCapacityDate === today;
+  const days = getDaysSinceStart();
+
+  if (!capacityDone) return 'Start with your capacity check-in — it sets the tone for your whole day. 🟢🟡🔴';
+
+  const week = getCurrentWeek();
+  const data = WEEK_DATA[week];
+  const nextTraining = data?.days.find(d => d.type === 'Training' && !state.completedWorkouts[d.id]);
+  if (nextTraining && isDayUnlocked(week, data.days.indexOf(nextTraining))) {
+    return `Your next workout is ready — ${nextTraining.name}. Open the app and let's build. 💪`;
+  }
+  return `Day ${days + 1} of your Rebuild & Rise journey. Keep showing up. 🔥`;
+}
+
+function getEveningMessage() {
+  const today = new Date().toDateString();
+  const capacityDone = state.lastCapacityDate === today;
+  const waterOz = state.waterOz || 0;
+
+  if (!capacityDone) return 'You haven\'t checked your capacity today. It only takes 30 seconds — open the app now. 🟢';
+  if (waterOz < 80) return `Hydration check — you\'ve logged ${waterOz}oz today. Goal is 80-100oz. Keep drinking! 💧`;
+  return 'Great work today. Rest well — your nervous system is rebuilding. See you tomorrow. 🌙';
+}
+
+// Special event notifications
+function checkSpecialNotifications() {
+  if (!FEATURES.pushNotifications || !state.notificationsEnabled) return;
+  if (Notification.permission !== 'granted') return;
+
+  const days = getDaysSinceStart();
+  const today = new Date().toDateString();
+
+  // Day 14 — measurement reminder
+  if (days === 14 && (!state.shownNotifications || !state.shownNotifications.includes('day14-measure'))) {
+    new Notification('📏 Week 2 Check-In', {
+      body: 'It\'s Day 14 — time to log your measurements and see how far you\'ve come. Open the Progress tab.',
+      tag: 'day14-measure'
+    });
+    if (!state.shownNotifications) state.shownNotifications = [];
+    state.shownNotifications.push('day14-measure');
+    saveState();
+  }
+
+  // Day 28 — final check-in
+  if (days === 28 && (!state.shownNotifications || !state.shownNotifications.includes('day28-final'))) {
+    new Notification('🎖️ Program Complete!', {
+      body: 'You did it! Log your final measurements and take your post-program photos in 3 days. You\'ve earned this.',
+      tag: 'day28-final'
+    });
+    if (!state.shownNotifications) state.shownNotifications = [];
+    state.shownNotifications.push('day28-final');
+    saveState();
+  }
+
+  // Workout unlocked notification
+  const week = getCurrentWeek();
+  const data = WEEK_DATA[week];
+  if (data) {
+    data.days.forEach((day, i) => {
+      if (day.type === 'Training' && !state.completedWorkouts[day.id] && isDayUnlocked(week, i)) {
+        const notifId = 'unlocked-' + day.id + '-' + today;
+        if (!state.shownNotifications || !state.shownNotifications.includes(notifId)) {
+          new Notification('💪 Workout Unlocked!', {
+            body: `${day.name} is ready for you. Open Rebuild & Rise and let\'s build.`,
+            tag: notifId
+          });
+          if (!state.shownNotifications) state.shownNotifications = [];
+          state.shownNotifications.push(notifId);
+          saveState();
+        }
+      }
+    });
+  }
+}
+let timerInterval = null;
+let timerSeconds = 30;
+let timerRunning = false;
+let timerPaused = false;
+
+function startTimer(seconds) {
+  timerSeconds = seconds;
+  timerRunning = true;
+  timerPaused = false;
+  document.getElementById('rest-timer-overlay').style.display = 'flex';
+  updateTimerDisplay();
+  clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    if (!timerPaused) {
+      timerSeconds--;
+      updateTimerDisplay();
+      if (timerSeconds <= 0) {
+        clearInterval(timerInterval);
+        timerRunning = false;
+        document.getElementById('rest-timer-display').textContent = 'GO!';
+        // Vibrate if supported
+        if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+        setTimeout(() => stopTimer(), 1500);
+      }
+    }
+  }, 1000);
+}
+
+function updateTimerDisplay() {
+  const mins = Math.floor(timerSeconds / 60);
+  const secs = timerSeconds % 60;
+  document.getElementById('rest-timer-display').textContent =
+    mins > 0 ? `${mins}:${secs.toString().padStart(2,'0')}` : `0:${secs.toString().padStart(2,'0')}`;
+}
+
+function pauseTimer() {
+  timerPaused = !timerPaused;
+  document.getElementById('pauseBtn').textContent = timerPaused ? 'Resume' : 'Pause';
+}
+
+function stopTimer() {
+  clearInterval(timerInterval);
+  timerRunning = false;
+  timerPaused = false;
+  document.getElementById('rest-timer-overlay').style.display = 'none';
+  document.getElementById('rest-timer-display').textContent = '0:30';
+  document.getElementById('pauseBtn').textContent = 'Pause';
+}
+
+function setTimer(seconds) {
+  timerSeconds = seconds;
+  updateTimerDisplay();
+  if (!timerRunning) startTimer(seconds);
+}
+
+// ══════════════ STREAK TRACKER ══════════════
+function updateStreak() {
+  const today = new Date().toDateString();
+  const lastActive = state.lastActiveDate;
+
+  if (lastActive === today) {
+    // Already counted today
+  } else if (lastActive === new Date(Date.now() - 86400000).toDateString()) {
+    // Yesterday — extend streak
+    state.streak = (state.streak || 0) + 1;
+    state.lastActiveDate = today;
+    saveState();
+  } else if (!lastActive) {
+    // First day
+    state.streak = 1;
+    state.lastActiveDate = today;
+    saveState();
+  } else {
+    // Streak broken
+    state.streak = 1;
+    state.lastActiveDate = today;
+    saveState();
+  }
+
+  const el = document.getElementById('statStreak');
+  if (el) el.textContent = state.streak || 1;
+}
+
+// ══════════════ HYDRATION TRACKER ══════════════
+function initHydration() {
+  const today = new Date().toDateString();
+  if (state.waterDate !== today) {
+    state.waterOz = 0;
+    state.waterDate = today;
+    saveState();
+  }
+  updateHydrationUI();
+}
+
+function logWater(oz) {
+  state.waterOz = (state.waterOz || 0) + oz;
+  state.waterDate = new Date().toDateString();
+  saveState();
+  updateHydrationUI();
+  if (state.waterOz >= 80) showToast('💧 Hydration goal reached! Amazing work.');
+}
+
+function resetWater() {
+  state.waterOz = 0;
+  saveState();
+  updateHydrationUI();
+}
+
+function updateHydrationUI() {
+  const oz = state.waterOz || 0;
+  const glasses = Math.floor(oz / 8);
+  const pct = Math.min((oz / 100) * 100, 100);
+  const countEl = document.getElementById('waterCount');
+  const ozEl = document.getElementById('waterOz');
+  const barEl = document.getElementById('waterBar');
+  if (countEl) countEl.textContent = glasses;
+  if (ozEl) ozEl.textContent = oz + ' oz';
+  if (barEl) barEl.style.width = pct + '%';
+}
+
+// ══════════════ TOAST ══════════════
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+</script>
+</body>
+</html>
