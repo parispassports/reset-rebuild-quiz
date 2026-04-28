@@ -659,6 +659,15 @@
 </head>
 <body>
 
+<!-- Hidden Flodesk Form -->
+<div style="display:none;" id="flodesk-wrapper">
+  <div id="fd-form-69f0b0e4fe9c729a0eb4f248"></div>
+</div>
+<script>
+  window.fd = window.fd || function() { (window.fd.q = window.fd.q || []).push(arguments); };
+</script>
+<script src="https://forms.flodesk.com/embed.js" onload="window.fd('form', { formId: '69f0b0e4fe9c729a0eb4f248', containerEl: '#fd-form-69f0b0e4fe9c729a0eb4f248' });"></script>
+
 <div class="quiz-wrapper">
   <header class="quiz-header">
     <span class="brand-mark">Coach Paris · Reset &amp; Rebuild™</span>
@@ -1138,19 +1147,20 @@
     };
     const segmentId = segmentMap[key];
 
-    // Send directly to Flodesk API — no Make.com middleman
-    fetch('https://api.flodesk.com/v1/subscribers', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Basic ' + btoa('fd_key_0d8750bec59f43f58f49443cecbbacaf.OaW9Fey0r8BUpwyMLKjtGvvsVIvofcwgIREWjlg7yEMMO1DMb8OrQxyRhEfG9aKQCazyeFnXFZEVhnQFPpD5ttraY0QG8ClBCE2cIT7MHui5NgrToEYfDzOokJD32vvm8kXnzlU6nXuPJ0a8J9XiBSZ5oon8fynTrF09ONG6UHDwjK8SwTB7DkqTWbhlG3rT:')
-      },
-      body: JSON.stringify({
-        email: email,
-        first_name: firstName,
-        segments: [{ id: segmentId }]
-      })
-    }).catch(err => console.log('Flodesk error:', err));
+    // Auto-submit hidden Flodesk form
+    setTimeout(() => {
+      try {
+        const wrapper = document.getElementById('flodesk-wrapper');
+        const nameInput = wrapper.querySelector('input[name="first_name"], input[placeholder*="name"], input[placeholder*="Name"]');
+        const emailInput = wrapper.querySelector('input[name="email"], input[type="email"]');
+        const submitBtn = wrapper.querySelector('button[type="submit"], button');
+        if (nameInput) nameInput.value = firstName;
+        if (emailInput) emailInput.value = email;
+        if (submitBtn) submitBtn.click();
+      } catch(e) {
+        console.log('Flodesk form submit error:', e);
+      }
+    }, 2000);
 
     const insightHTML = `
       <div class="insight-card">
