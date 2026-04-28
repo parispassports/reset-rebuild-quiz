@@ -1148,7 +1148,7 @@
     const segmentId = segmentMap[key];
 
     // Send via Netlify function — bypasses CORS
-    fetch('https://strong-fox-6b9795.netlify.app/.netlify/functions/subscribe', {
+    fetch('https://quiz-mailer.netlify.app/api/subscribe', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
