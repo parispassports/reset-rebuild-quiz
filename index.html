@@ -1107,9 +1107,11 @@
       showScreen('q' + (qNum + 1));
       updateProgress(qNum);
     } else {
-      showScreen('email');
-      updateProgress(8);
-      document.getElementById('progressCount').textContent = 'Almost done';
+      // Calculate and store score before redirecting
+      const score = calculateScore();
+      localStorage.setItem('quizScore', score);
+      // Redirect to MailerLite landing page
+      window.location.href = 'https://passports-2-fitness-llc-gdbijz.subscribepage.io';
     }
   }
 
@@ -1148,7 +1150,7 @@
     const segmentId = segmentMap[key];
 
     // Send via Netlify function — bypasses CORS
-    fetch('https://quiz-mailer.netlify.app/api/subscribe', {
+    fetch('https://strong-fox-6b9795.netlify.app/.netlify/functions/subscribe', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
