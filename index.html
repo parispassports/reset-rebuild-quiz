@@ -1147,19 +1147,16 @@
     };
     const segmentId = segmentMap[key];
 
-    // Send directly to Flodesk API
-    fetch('https://api.flodesk.com/v1/subscribers', {
+    // Send via Netlify function — bypasses CORS
+    fetch('https://strong-fox-6b9795.netlify.app/.netlify/functions/subscribe', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Basic ' + btoa('fd_key_0d8750bec59f43f58f49443cecbbacaf.OaW9Fey0r8BUpwyMLKjtGvvsVIvofcwgIREWjlg7yEMMO1DMb8OrQxyRhEfG9aKQCazyeFnXFZEVhnQFPpD5ttraY0QG8ClBCE2cIT7MHui5NgrToEYfDzOokJD32vvm8kXnzlU6nXuPJ0a8J9XiBSZ5oon8fynTrF09ONG6UHDwjK8SwTB7DkqTWbhlG3rT:')
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         email: email,
         first_name: firstName,
-        segment_ids: [segmentId]
+        segment_id: segmentId
       })
-    }).then(r => r.json()).then(d => console.log('Flodesk response:', d)).catch(err => console.log('Flodesk error:', err));
+    }).then(r => r.json()).then(d => console.log('Flodesk response:', d)).catch(err => console.log('Error:', err));
 
     const insightHTML = `
       <div class="insight-card">
